@@ -1,0 +1,33 @@
+{
+  "name": "@gismo/sdk",
+  "version": "1.0.0",
+  "description": "Generated TypeScript client for the Gismo Control-Plane API and MCP tool-surface models",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "default": "./dist/src/index.js"
+    }
+  },
+  "files": [
+    "dist/src"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "generate": "scripts/generate.sh",
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test dist/test/*.test.js"
+  },
+  "devDependencies": {
+    "@types/node": "26.1.1",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
+    "json-schema-to-typescript": "15.0.4",
+    "typescript": "6.0.3"
+  }
+}

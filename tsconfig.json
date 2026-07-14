@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "types": ["node"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    // openapi-generator's typescript-fetch templates emit dual camelCase/wire-case
+    // property checks (e.g. value['orgId'] alongside value['org_id']) in generated
+    // instanceOf*/FromJSONTyped internals; narrowing on the `in` operator produces a
+    // union where not every member has both keys, which noImplicitAny flags as
+    // TS7053. This doesn't weaken shape-checking on the public model interfaces
+    // (still verified by strictNullChecks + structural typing), only silences an
+    // implicit-any inside generated code we don't hand-edit. Tracked upstream as
+    // github.com/OpenAPITools/openapi-generator#18746 (a related instance).
+    "noImplicitAny": false,
+    "declaration": true,
+    "sourceMap": true,
+    "outDir": "dist",
+    "rootDir": ".",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src/**/*.ts", "test/**/*.ts"]
+}
