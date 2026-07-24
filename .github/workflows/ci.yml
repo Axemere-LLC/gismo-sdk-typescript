@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    # secrets context isn't available in steps.*.if — hoist the presence
+    # check into env, which is.
+    env:
+      HAS_SIBLING_TOKEN: ${{ secrets.SIBLING_REPO_TOKEN != '' }}
+    steps:
+      # actions/checkout refuses any path outside $GITHUB_WORKSPACE (no
+      # "../"), so the main repo and its sibling are both checked out as
+      # subdirectories of the workspace instead — gismo-sdk-typescript/,
+      # gismo-contracts/ — which preserves the "../gismo-contracts"
+      # relative path scripts/generate.sh expects.
+      - uses: actions/checkout@v4
+        with:
+          path: gismo-sdk-typescript
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        working-directory: gismo-sdk-typescript
+        run: npm ci
+
+      - name: Dependency-pinning self-check
+        working-directory: gismo-sdk-typescript
+        run: |
+          test -f package-lock.json || { echo "package-lock.json is missing — dependencies are not locked" >&2; exit 1; }
+          if grep -E '"[a-zA-Z0-9@/_.-]+": *"[\^~]' package.json; then
+            echo "unpinned (caret/tilde) dependency found in package.json" >&2
+            exit 1
+          fi
+          echo "all dependencies pinned"
+
+      - name: Build and run test suite
+        working-directory: gismo-sdk-typescript
+        run: npm test
+
+      # Drift-check regenerates src/rest + src/mcp from the published
+      # contract and fails the build if committed code differs from fresh
+      # output. It needs a sibling ../gismo-contracts checkout, which
+      # requires read access to that private repo — see
+      # gismo-platform/docs/phase-7-supply-chain.md for provisioning
+      # SIBLING_REPO_TOKEN. Skips (not fails) until that secret exists, and
+      # continue-on-error covers the case where the secret exists but this
+      # particular repo isn't in the token's read scope — the hashFiles
+      # check below only proceeds if the checkout actually succeeded.
+      - name: Checkout gismo-contracts (sibling)
+        if: ${{ env.HAS_SIBLING_TOKEN == 'true' }}
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: Axemere-LLC/gismo-contracts
+          token: ${{ secrets.SIBLING_REPO_TOKEN }}
+          path: gismo-contracts
+
+      - name: Drift-check against published contract
+        if: ${{ env.HAS_SIBLING_TOKEN == 'true' && hashFiles('gismo-contracts/openapi/openapi.yaml') != '' }}
+        working-directory: gismo-sdk-typescript
+        run: make drift-check

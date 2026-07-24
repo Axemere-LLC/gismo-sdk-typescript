@@ -1,0 +1,67 @@
+name: Release
+
+# Inert until the reveal milestone: this repo is private and no tag has been
+# pushed. Publishing also requires registering this repo as an npm Trusted
+# Publisher for the `@gismo/sdk` package (npm package settings > Publishing
+# access) — see gismo-platform/docs/phase-7-supply-chain.md. Do not push a
+# `v*` tag before both the reveal decision and that registration are done.
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies and build
+        run: |
+          npm ci
+          npm run build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      id-token: write # required for npm OIDC trusted publishing + provenance
+      attestations: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Attach Sigstore build provenance
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: "dist/**"
+
+      # No stored npm token: --provenance authenticates via a short-lived,
+      # workflow-scoped OIDC token exchanged at publish time, once the repo
+      # is registered as a Trusted Publisher.
+      - name: Publish to npm
+        run: npm publish --provenance --access public
