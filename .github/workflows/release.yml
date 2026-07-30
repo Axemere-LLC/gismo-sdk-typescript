@@ -1,14 +1,21 @@
 name: Release
 
-# Inert until the reveal milestone: this repo is private and no tag has been
-# pushed. Publishing also requires registering this repo as an npm Trusted
-# Publisher for the `@gismo/sdk` package (npm package settings > Publishing
-# access) — see gismo-platform/docs/phase-7-supply-chain.md. Do not push a
-# `v*` tag before both the reveal decision and that registration are done.
+# Gated: the "Publish to npm" step only runs when the RELEASE_PUBLISH_ENABLED
+# repo variable is set to "true" AND this isn't a workflow_dispatch dry run.
+# RELEASE_PUBLISH_ENABLED is unset until the reveal decision, so the gate is
+# closed by default. Publishing also requires registering this repo as an
+# npm Trusted Publisher for the `@gismo/sdk` package (npm package settings >
+# Publishing access) — see gismo-platform/docs/phase-7-supply-chain.md.
 on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run: build and sign, but skip the npm publish step"
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -64,4 +71,5 @@ jobs:
       # workflow-scoped OIDC token exchanged at publish time, once the repo
       # is registered as a Trusted Publisher.
       - name: Publish to npm
+        if: vars.RELEASE_PUBLISH_ENABLED == 'true' && github.event.inputs.dry_run != 'true'
         run: npm publish --provenance --access public
