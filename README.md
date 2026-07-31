@@ -1,4 +1,4 @@
-# @gismo/sdk
+# @gismo2026/sdk
 
 **Generated TypeScript client for the Gismo Control-Plane API and MCP tool surface — install it,
 build a `Configuration`, and you're calling the platform in under a minute.**
@@ -32,13 +32,13 @@ needs to talk to Gismo without hand-rolling `fetch` calls or JSON parsing.
 ## Install
 
 ```sh
-npm install @gismo/sdk
+npm install @gismo2026/sdk
 ```
 
 ## Quickstart
 
 ```typescript
-import { newClient, TeamsApi } from "@gismo/sdk";
+import { newClient, TeamsApi } from "@gismo2026/sdk";
 
 const configuration = newClient({ token: "gismo_pat_..." });
 const teamsApi = new TeamsApi(configuration);

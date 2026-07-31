@@ -4,7 +4,7 @@ name: Release
 # repo variable is set to "true" AND this isn't a workflow_dispatch dry run.
 # RELEASE_PUBLISH_ENABLED is unset until the reveal decision, so the gate is
 # closed by default. Publishing also requires registering this repo as an
-# npm Trusted Publisher for the `@gismo/sdk` package (npm package settings >
+# npm Trusted Publisher for the `@gismo2026/sdk` package (npm package settings >
 # Publishing access) — see gismo-platform/docs/phase-7-supply-chain.md.
 on:
   push:
