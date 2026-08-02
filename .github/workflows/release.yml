@@ -28,7 +28,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           registry-url: "https://registry.npmjs.org"
 
       - name: Install dependencies and build
@@ -54,7 +54,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           registry-url: "https://registry.npmjs.org"
 
       - uses: actions/download-artifact@v4
@@ -66,6 +66,12 @@ jobs:
         uses: actions/attest-build-provenance@v1
         with:
           subject-path: "dist/**"
+
+      # OIDC trusted publishing requires npm >=11.5.1 (Node 22's bundled npm
+      # is older than that as of this writing), so upgrade explicitly rather
+      # than relying on whatever setup-node happens to bundle.
+      - name: Upgrade npm for OIDC trusted publishing
+        run: npm install -g npm@^11.5.1
 
       # No stored npm token: --provenance authenticates via a short-lived,
       # workflow-scoped OIDC token exchanged at publish time, once the repo
