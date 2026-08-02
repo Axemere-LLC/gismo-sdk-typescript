@@ -3,6 +3,14 @@
   "version": "1.0.1",
   "description": "Generated TypeScript client for the Gismo Control-Plane API and MCP tool-surface models",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Axemere-LLC/gismo-sdk-typescript.git"
+  },
+  "homepage": "https://github.com/Axemere-LLC/gismo-sdk-typescript#readme",
+  "bugs": {
+    "url": "https://github.com/Axemere-LLC/gismo-sdk-typescript/issues"
+  },
   "type": "module",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
