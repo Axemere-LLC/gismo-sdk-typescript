@@ -14,13 +14,57 @@
 
 import * as runtime from '../runtime.js';
 import {
+    type OrgMemberList,
+    OrgMemberListFromJSON,
+    OrgMemberListToJSON,
+} from '../models/OrgMemberList.js';
+import {
     type Organization,
     OrganizationFromJSON,
     OrganizationToJSON,
 } from '../models/Organization.js';
+import {
+    type OrganizationList,
+    OrganizationListFromJSON,
+    OrganizationListToJSON,
+} from '../models/OrganizationList.js';
+import {
+    type PendingInvitation,
+    PendingInvitationFromJSON,
+    PendingInvitationToJSON,
+} from '../models/PendingInvitation.js';
+import {
+    type PendingInvitationList,
+    PendingInvitationListFromJSON,
+    PendingInvitationListToJSON,
+} from '../models/PendingInvitationList.js';
+import {
+    type SendInvitationRequest,
+    SendInvitationRequestFromJSON,
+    SendInvitationRequestToJSON,
+} from '../models/SendInvitationRequest.js';
 
 export interface GetOrganizationRequest {
     id: string;
+}
+
+export interface ListInvitationsRequest {
+    id: string;
+}
+
+export interface ListOrgMembersRequest {
+    id: string;
+}
+
+export interface RevokeInvitationRequest {
+    id: string;
+    invitationId: string;
+}
+
+export interface SendInvitationOperationRequest {
+    id: string;
+    sendInvitationRequest: SendInvitationRequest;
+    idempotencyKey?: string;
 }
 
 /**
@@ -78,6 +122,294 @@ export class OrganizationsApi extends runtime.BaseAPI {
      */
     async getOrganization(requestParameters: GetOrganizationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Organization> {
         const response = await this.getOrganizationRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for listInvitations without sending the request
+     */
+    async listInvitationsRequestOpts(requestParameters: ListInvitationsRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling listInvitations().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/organizations/{id}/invitations`;
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
+
+        return {
+            path: urlPath,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     * Org Admin/Owner only.
+     * List an organization\'s pending invitations
+     */
+    async listInvitationsRaw(requestParameters: ListInvitationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PendingInvitationList>> {
+        const requestOptions = await this.listInvitationsRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => PendingInvitationListFromJSON(jsonValue));
+    }
+
+    /**
+     * Org Admin/Owner only.
+     * List an organization\'s pending invitations
+     */
+    async listInvitations(requestParameters: ListInvitationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PendingInvitationList> {
+        const response = await this.listInvitationsRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for listOrgMembers without sending the request
+     */
+    async listOrgMembersRequestOpts(requestParameters: ListOrgMembersRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling listOrgMembers().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/organizations/{id}/members`;
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
+
+        return {
+            path: urlPath,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     * Org Admin/Owner only — the roster is management data, not something every member needs to read. A Personal API Token is never granted this, even when bound to a team owned by the organization. 
+     * List an organization\'s member roster
+     */
+    async listOrgMembersRaw(requestParameters: ListOrgMembersRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<OrgMemberList>> {
+        const requestOptions = await this.listOrgMembersRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => OrgMemberListFromJSON(jsonValue));
+    }
+
+    /**
+     * Org Admin/Owner only — the roster is management data, not something every member needs to read. A Personal API Token is never granted this, even when bound to a team owned by the organization. 
+     * List an organization\'s member roster
+     */
+    async listOrgMembers(requestParameters: ListOrgMembersRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<OrgMemberList> {
+        const response = await this.listOrgMembersRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for listOrganizations without sending the request
+     */
+    async listOrganizationsRequestOpts(): Promise<runtime.RequestOpts> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/organizations`;
+
+        return {
+            path: urlPath,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     * Includes the caller\'s personal organization. A PAT is confined to the single organization that owns its bound team, regardless of what other organizations the minting user belongs to. 
+     * List every organization the caller belongs to
+     */
+    async listOrganizationsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<OrganizationList>> {
+        const requestOptions = await this.listOrganizationsRequestOpts();
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => OrganizationListFromJSON(jsonValue));
+    }
+
+    /**
+     * Includes the caller\'s personal organization. A PAT is confined to the single organization that owns its bound team, regardless of what other organizations the minting user belongs to. 
+     * List every organization the caller belongs to
+     */
+    async listOrganizations(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<OrganizationList> {
+        const response = await this.listOrganizationsRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for revokeInvitation without sending the request
+     */
+    async revokeInvitationRequestOpts(requestParameters: RevokeInvitationRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling revokeInvitation().'
+            );
+        }
+
+        if (requestParameters['invitationId'] == null) {
+            throw new runtime.RequiredError(
+                'invitationId',
+                'Required parameter "invitationId" was null or undefined when calling revokeInvitation().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/organizations/{id}/invitations/{invitationId}`;
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{invitationId}', encodeURIComponent(String(requestParameters['invitationId'])));
+
+        return {
+            path: urlPath,
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     * Org Admin/Owner only. The invitation must still be pending — an already-accepted or already-revoked invitation is a 400. 
+     * Revoke a pending invitation
+     */
+    async revokeInvitationRaw(requestParameters: RevokeInvitationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        const requestOptions = await this.revokeInvitationRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Org Admin/Owner only. The invitation must still be pending — an already-accepted or already-revoked invitation is a 400. 
+     * Revoke a pending invitation
+     */
+    async revokeInvitation(requestParameters: RevokeInvitationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.revokeInvitationRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Creates request options for sendInvitation without sending the request
+     */
+    async sendInvitationRequestOpts(requestParameters: SendInvitationOperationRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling sendInvitation().'
+            );
+        }
+
+        if (requestParameters['sendInvitationRequest'] == null) {
+            throw new runtime.RequiredError(
+                'sendInvitationRequest',
+                'Required parameter "sendInvitationRequest" was null or undefined when calling sendInvitation().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (requestParameters['idempotencyKey'] != null) {
+            headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
+        }
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/organizations/{id}/invitations`;
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
+
+        return {
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: SendInvitationRequestToJSON(requestParameters['sendInvitationRequest']),
+        };
+    }
+
+    /**
+     * Org Admin/Owner only. role_weight must be 3 (member) or 4 (admin) — an invitation can never mint an owner. Cannot target a personal organization. Sent through Clerk\'s Backend API; a Clerk-side failure surfaces as 502. 
+     * Invite a new member to an organization
+     */
+    async sendInvitationRaw(requestParameters: SendInvitationOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PendingInvitation>> {
+        const requestOptions = await this.sendInvitationRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => PendingInvitationFromJSON(jsonValue));
+    }
+
+    /**
+     * Org Admin/Owner only. role_weight must be 3 (member) or 4 (admin) — an invitation can never mint an owner. Cannot target a personal organization. Sent through Clerk\'s Backend API; a Clerk-side failure surfaces as 502. 
+     * Invite a new member to an organization
+     */
+    async sendInvitation(requestParameters: SendInvitationOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PendingInvitation> {
+        const response = await this.sendInvitationRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

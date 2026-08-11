@@ -13,70 +13,70 @@
  */
 
 import { mapValues } from '../runtime.js';
-import type { Team } from './Team.js';
+import type { OrgMember } from './OrgMember.js';
 import {
-    TeamFromJSON,
-    TeamFromJSONTyped,
-    TeamToJSON,
-    TeamToJSONTyped,
-} from './Team.js';
+    OrgMemberFromJSON,
+    OrgMemberFromJSONTyped,
+    OrgMemberToJSON,
+    OrgMemberToJSONTyped,
+} from './OrgMember.js';
 
 /**
  * 
  * @export
- * @interface TeamList
+ * @interface OrgMemberList
  */
-export interface TeamList {
+export interface OrgMemberList {
     /**
      * 
-     * @type {Array<Team>}
-     * @memberof TeamList
+     * @type {Array<OrgMember>}
+     * @memberof OrgMemberList
      */
-    items: Array<Team>;
+    items: Array<OrgMember>;
     /**
      * 
      * @type {string}
-     * @memberof TeamList
+     * @memberof OrgMemberList
      */
     nextPageToken: string;
 }
 
 /**
- * Check if a given object implements the TeamList interface.
+ * Check if a given object implements the OrgMemberList interface.
  */
-export function instanceOfTeamList(value: object): value is TeamList {
+export function instanceOfOrgMemberList(value: object): value is OrgMemberList {
     if (!('items' in value) || value['items'] === undefined) return false;
     if ((!('nextPageToken' in (value as Record<string, any>)) && !('next_page_token' in (value as Record<string, any>))) || ((value as Record<string, any>)['nextPageToken'] === undefined && (value as Record<string, any>)['next_page_token'] === undefined)) return false;
     return true;
 }
 
-export function TeamListFromJSON(json: any): TeamList {
-    return TeamListFromJSONTyped(json, false);
+export function OrgMemberListFromJSON(json: any): OrgMemberList {
+    return OrgMemberListFromJSONTyped(json, false);
 }
 
-export function TeamListFromJSONTyped(json: any, ignoreDiscriminator: boolean): TeamList {
+export function OrgMemberListFromJSONTyped(json: any, ignoreDiscriminator: boolean): OrgMemberList {
     if (json == null) {
         return json;
     }
     return {
         
-        'items': ((json['items'] as Array<any>).map(TeamFromJSON)),
+        'items': ((json['items'] as Array<any>).map(OrgMemberFromJSON)),
         'nextPageToken': json['next_page_token'],
     };
 }
 
-export function TeamListToJSON(json: any): TeamList {
-    return TeamListToJSONTyped(json, false);
+export function OrgMemberListToJSON(json: any): OrgMemberList {
+    return OrgMemberListToJSONTyped(json, false);
 }
 
-export function TeamListToJSONTyped(value?: TeamList | null, ignoreDiscriminator: boolean = false): any {
+export function OrgMemberListToJSONTyped(value?: OrgMemberList | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
 
     return {
         
-        'items': ((value['items'] as Array<any>).map(TeamToJSON)),
+        'items': ((value['items'] as Array<any>).map(OrgMemberToJSON)),
         'next_page_token': value['nextPageToken'],
     };
 }

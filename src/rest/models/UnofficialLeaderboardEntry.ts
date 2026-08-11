@@ -16,87 +16,105 @@ import { mapValues } from '../runtime.js';
 /**
  * 
  * @export
- * @interface HistoricLeaderboardEntry
+ * @interface UnofficialLeaderboardEntry
  */
-export interface HistoricLeaderboardEntry {
+export interface UnofficialLeaderboardEntry {
     /**
      * 
      * @type {number}
-     * @memberof HistoricLeaderboardEntry
+     * @memberof UnofficialLeaderboardEntry
      */
     rank: number;
     /**
      * 
      * @type {string}
-     * @memberof HistoricLeaderboardEntry
+     * @memberof UnofficialLeaderboardEntry
      */
     agentVersionId: string;
     /**
      * 
      * @type {string}
-     * @memberof HistoricLeaderboardEntry
+     * @memberof UnofficialLeaderboardEntry
      */
     agentName: string;
     /**
      * 
      * @type {string}
-     * @memberof HistoricLeaderboardEntry
+     * @memberof UnofficialLeaderboardEntry
      */
     agentVersionLabel: string;
     /**
      * 
      * @type {string}
-     * @memberof HistoricLeaderboardEntry
+     * @memberof UnofficialLeaderboardEntry
      */
     teamName: string;
     /**
      * 
      * @type {string}
-     * @memberof HistoricLeaderboardEntry
+     * @memberof UnofficialLeaderboardEntry
      */
     orgName: string;
     /**
      * Glicko-2 rating (r). Default for a new agent-version is 1500.
      * @type {number}
-     * @memberof HistoricLeaderboardEntry
+     * @memberof UnofficialLeaderboardEntry
      */
     rating: number;
     /**
      * Glicko-2 rating deviation (RD). Default for a new agent-version is 350.
      * @type {number}
-     * @memberof HistoricLeaderboardEntry
+     * @memberof UnofficialLeaderboardEntry
      */
     ratingDeviation: number;
     /**
      * True until enough official matches have narrowed RD.
      * @type {boolean}
-     * @memberof HistoricLeaderboardEntry
+     * @memberof UnofficialLeaderboardEntry
      */
     provisional: boolean;
     /**
-     * r minus 2 times RD at retirement, frozen.
+     * 
      * @type {number}
-     * @memberof HistoricLeaderboardEntry
+     * @memberof UnofficialLeaderboardEntry
      */
-    conservativeRating: number;
+    wins: number;
     /**
-     * Highest r ever reached while active.
+     * 
      * @type {number}
-     * @memberof HistoricLeaderboardEntry
+     * @memberof UnofficialLeaderboardEntry
      */
-    peakRating: number;
+    losses: number;
     /**
-     * RD at the moment peak_rating was reached.
+     * 
      * @type {number}
-     * @memberof HistoricLeaderboardEntry
+     * @memberof UnofficialLeaderboardEntry
      */
-    peakRatingDeviation: number;
+    ties: number;
+    /**
+     * wins / (wins + losses + ties); 0 when no matches have been played.
+     * @type {number}
+     * @memberof UnofficialLeaderboardEntry
+     */
+    winRate: number;
+    /**
+     * (3*wins + ties) / (wins + losses + ties), the ranking key for this board; 0 when no matches have been played. Ranges from 0 to 3.
+     * @type {number}
+     * @memberof UnofficialLeaderboardEntry
+     */
+    pointsPerMatch: number;
+    /**
+     * True when fewer than 5 matches have been played — ranked below all qualified agent-versions, but still shown and scored.
+     * @type {boolean}
+     * @memberof UnofficialLeaderboardEntry
+     */
+    provisionalRecord: boolean;
 }
 
 /**
- * Check if a given object implements the HistoricLeaderboardEntry interface.
+ * Check if a given object implements the UnofficialLeaderboardEntry interface.
  */
-export function instanceOfHistoricLeaderboardEntry(value: object): value is HistoricLeaderboardEntry {
+export function instanceOfUnofficialLeaderboardEntry(value: object): value is UnofficialLeaderboardEntry {
     if (!('rank' in value) || value['rank'] === undefined) return false;
     if ((!('agentVersionId' in (value as Record<string, any>)) && !('agent_version_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['agentVersionId'] === undefined && (value as Record<string, any>)['agent_version_id'] === undefined)) return false;
     if ((!('agentName' in (value as Record<string, any>)) && !('agent_name' in (value as Record<string, any>))) || ((value as Record<string, any>)['agentName'] === undefined && (value as Record<string, any>)['agent_name'] === undefined)) return false;
@@ -106,17 +124,20 @@ export function instanceOfHistoricLeaderboardEntry(value: object): value is Hist
     if (!('rating' in value) || value['rating'] === undefined) return false;
     if ((!('ratingDeviation' in (value as Record<string, any>)) && !('rating_deviation' in (value as Record<string, any>))) || ((value as Record<string, any>)['ratingDeviation'] === undefined && (value as Record<string, any>)['rating_deviation'] === undefined)) return false;
     if (!('provisional' in value) || value['provisional'] === undefined) return false;
-    if ((!('conservativeRating' in (value as Record<string, any>)) && !('conservative_rating' in (value as Record<string, any>))) || ((value as Record<string, any>)['conservativeRating'] === undefined && (value as Record<string, any>)['conservative_rating'] === undefined)) return false;
-    if ((!('peakRating' in (value as Record<string, any>)) && !('peak_rating' in (value as Record<string, any>))) || ((value as Record<string, any>)['peakRating'] === undefined && (value as Record<string, any>)['peak_rating'] === undefined)) return false;
-    if ((!('peakRatingDeviation' in (value as Record<string, any>)) && !('peak_rating_deviation' in (value as Record<string, any>))) || ((value as Record<string, any>)['peakRatingDeviation'] === undefined && (value as Record<string, any>)['peak_rating_deviation'] === undefined)) return false;
+    if (!('wins' in value) || value['wins'] === undefined) return false;
+    if (!('losses' in value) || value['losses'] === undefined) return false;
+    if (!('ties' in value) || value['ties'] === undefined) return false;
+    if ((!('winRate' in (value as Record<string, any>)) && !('win_rate' in (value as Record<string, any>))) || ((value as Record<string, any>)['winRate'] === undefined && (value as Record<string, any>)['win_rate'] === undefined)) return false;
+    if ((!('pointsPerMatch' in (value as Record<string, any>)) && !('points_per_match' in (value as Record<string, any>))) || ((value as Record<string, any>)['pointsPerMatch'] === undefined && (value as Record<string, any>)['points_per_match'] === undefined)) return false;
+    if ((!('provisionalRecord' in (value as Record<string, any>)) && !('provisional_record' in (value as Record<string, any>))) || ((value as Record<string, any>)['provisionalRecord'] === undefined && (value as Record<string, any>)['provisional_record'] === undefined)) return false;
     return true;
 }
 
-export function HistoricLeaderboardEntryFromJSON(json: any): HistoricLeaderboardEntry {
-    return HistoricLeaderboardEntryFromJSONTyped(json, false);
+export function UnofficialLeaderboardEntryFromJSON(json: any): UnofficialLeaderboardEntry {
+    return UnofficialLeaderboardEntryFromJSONTyped(json, false);
 }
 
-export function HistoricLeaderboardEntryFromJSONTyped(json: any, ignoreDiscriminator: boolean): HistoricLeaderboardEntry {
+export function UnofficialLeaderboardEntryFromJSONTyped(json: any, ignoreDiscriminator: boolean): UnofficialLeaderboardEntry {
     if (json == null) {
         return json;
     }
@@ -131,17 +152,20 @@ export function HistoricLeaderboardEntryFromJSONTyped(json: any, ignoreDiscrimin
         'rating': json['rating'],
         'ratingDeviation': json['rating_deviation'],
         'provisional': json['provisional'],
-        'conservativeRating': json['conservative_rating'],
-        'peakRating': json['peak_rating'],
-        'peakRatingDeviation': json['peak_rating_deviation'],
+        'wins': json['wins'],
+        'losses': json['losses'],
+        'ties': json['ties'],
+        'winRate': json['win_rate'],
+        'pointsPerMatch': json['points_per_match'],
+        'provisionalRecord': json['provisional_record'],
     };
 }
 
-export function HistoricLeaderboardEntryToJSON(json: any): HistoricLeaderboardEntry {
-    return HistoricLeaderboardEntryToJSONTyped(json, false);
+export function UnofficialLeaderboardEntryToJSON(json: any): UnofficialLeaderboardEntry {
+    return UnofficialLeaderboardEntryToJSONTyped(json, false);
 }
 
-export function HistoricLeaderboardEntryToJSONTyped(value?: HistoricLeaderboardEntry | null, ignoreDiscriminator: boolean = false): any {
+export function UnofficialLeaderboardEntryToJSONTyped(value?: UnofficialLeaderboardEntry | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -157,9 +181,12 @@ export function HistoricLeaderboardEntryToJSONTyped(value?: HistoricLeaderboardE
         'rating': value['rating'],
         'rating_deviation': value['ratingDeviation'],
         'provisional': value['provisional'],
-        'conservative_rating': value['conservativeRating'],
-        'peak_rating': value['peakRating'],
-        'peak_rating_deviation': value['peakRatingDeviation'],
+        'wins': value['wins'],
+        'losses': value['losses'],
+        'ties': value['ties'],
+        'win_rate': value['winRate'],
+        'points_per_match': value['pointsPerMatch'],
+        'provisional_record': value['provisionalRecord'],
     };
 }
 

@@ -29,10 +29,25 @@ import {
     AgentVersionKeyRotatedToJSON,
 } from '../models/AgentVersionKeyRotated.js';
 import {
+    type AgentVersionList,
+    AgentVersionListFromJSON,
+    AgentVersionListToJSON,
+} from '../models/AgentVersionList.js';
+import {
     type CreateAgentVersionRequest,
     CreateAgentVersionRequestFromJSON,
     CreateAgentVersionRequestToJSON,
 } from '../models/CreateAgentVersionRequest.js';
+import {
+    type TeamAgentVersionList,
+    TeamAgentVersionListFromJSON,
+    TeamAgentVersionListToJSON,
+} from '../models/TeamAgentVersionList.js';
+import {
+    type TrainingGroundsVersionList,
+    TrainingGroundsVersionListFromJSON,
+    TrainingGroundsVersionListToJSON,
+} from '../models/TrainingGroundsVersionList.js';
 import {
     type UpdateAgentVersionRequest,
     UpdateAgentVersionRequestFromJSON,
@@ -45,8 +60,24 @@ export interface CreateAgentVersionOperationRequest {
     idempotencyKey?: string;
 }
 
+export interface DeleteAgentVersionRequest {
+    id: string;
+}
+
 export interface GetAgentVersionRequest {
     id: string;
+}
+
+export interface ListAgentVersionsRequest {
+    id: string;
+}
+
+export interface ListTeamAgentVersionsRequest {
+    teamId: string;
+}
+
+export interface ListTrainingGroundsVersionsRequest {
+    trainingGroundsEligible: ListTrainingGroundsVersionsTrainingGroundsEligibleEnum;
 }
 
 export interface RotateAgentVersionKeyRequest {
@@ -130,6 +161,60 @@ export class AgentVersionsApi extends runtime.BaseAPI {
     }
 
     /**
+     * Creates request options for deleteAgentVersion without sending the request
+     */
+    async deleteAgentVersionRequestOpts(requestParameters: DeleteAgentVersionRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling deleteAgentVersion().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/agent-versions/{id}`;
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
+
+        return {
+            path: urlPath,
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     * Refuses with 409 if the version has any matches row at all — training or competition, regardless of status. The parent agent and its other versions are unaffected. 
+     * Delete a single agent version that has never been used
+     */
+    async deleteAgentVersionRaw(requestParameters: DeleteAgentVersionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        const requestOptions = await this.deleteAgentVersionRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Refuses with 409 if the version has any matches row at all — training or competition, regardless of status. The parent agent and its other versions are unaffected. 
+     * Delete a single agent version that has never been used
+     */
+    async deleteAgentVersion(requestParameters: DeleteAgentVersionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.deleteAgentVersionRaw(requestParameters, initOverrides);
+    }
+
+    /**
      * Creates request options for getAgentVersion without sending the request
      */
     async getAgentVersionRequestOpts(requestParameters: GetAgentVersionRequest): Promise<runtime.RequestOpts> {
@@ -177,6 +262,166 @@ export class AgentVersionsApi extends runtime.BaseAPI {
      */
     async getAgentVersion(requestParameters: GetAgentVersionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AgentVersion> {
         const response = await this.getAgentVersionRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for listAgentVersions without sending the request
+     */
+    async listAgentVersionsRequestOpts(requestParameters: ListAgentVersionsRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling listAgentVersions().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/agents/{id}/versions`;
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
+
+        return {
+            path: urlPath,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     * Team-scoped read — any member of the owning team, or its Lead/org Admin/Owner, may list it. Powers the launch UI\'s \"pick one of my own agent\'s versions\" step. 
+     * List one agent\'s versions
+     */
+    async listAgentVersionsRaw(requestParameters: ListAgentVersionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AgentVersionList>> {
+        const requestOptions = await this.listAgentVersionsRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => AgentVersionListFromJSON(jsonValue));
+    }
+
+    /**
+     * Team-scoped read — any member of the owning team, or its Lead/org Admin/Owner, may list it. Powers the launch UI\'s \"pick one of my own agent\'s versions\" step. 
+     * List one agent\'s versions
+     */
+    async listAgentVersions(requestParameters: ListAgentVersionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AgentVersionList> {
+        const response = await this.listAgentVersionsRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for listTeamAgentVersions without sending the request
+     */
+    async listTeamAgentVersionsRequestOpts(requestParameters: ListTeamAgentVersionsRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['teamId'] == null) {
+            throw new runtime.RequiredError(
+                'teamId',
+                'Required parameter "teamId" was null or undefined when calling listTeamAgentVersions().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/teams/{teamId}/agent-versions`;
+        urlPath = urlPath.replace('{teamId}', encodeURIComponent(String(requestParameters['teamId'])));
+
+        return {
+            path: urlPath,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     * Team-scoped read — any member of the owning team, or its Lead/org Admin/Owner, may list it. Flattens the agent → version cascade into one listing, powering the launch UI\'s \"Your agent\" picker with the same single-dropdown shape listTrainingGroundsVersions gives the opponent picker. 
+     * List every version across all of a team\'s agents
+     */
+    async listTeamAgentVersionsRaw(requestParameters: ListTeamAgentVersionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<TeamAgentVersionList>> {
+        const requestOptions = await this.listTeamAgentVersionsRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => TeamAgentVersionListFromJSON(jsonValue));
+    }
+
+    /**
+     * Team-scoped read — any member of the owning team, or its Lead/org Admin/Owner, may list it. Flattens the agent → version cascade into one listing, powering the launch UI\'s \"Your agent\" picker with the same single-dropdown shape listTrainingGroundsVersions gives the opponent picker. 
+     * List every version across all of a team\'s agents
+     */
+    async listTeamAgentVersions(requestParameters: ListTeamAgentVersionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<TeamAgentVersionList> {
+        const response = await this.listTeamAgentVersionsRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for listTrainingGroundsVersions without sending the request
+     */
+    async listTrainingGroundsVersionsRequestOpts(requestParameters: ListTrainingGroundsVersionsRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['trainingGroundsEligible'] == null) {
+            throw new runtime.RequiredError(
+                'trainingGroundsEligible',
+                'Required parameter "trainingGroundsEligible" was null or undefined when calling listTrainingGroundsVersions().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters['trainingGroundsEligible'] != null) {
+            queryParameters['training_grounds_eligible'] = requestParameters['trainingGroundsEligible'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+
+        let urlPath = `/agent-versions`;
+
+        return {
+            path: urlPath,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     * Public, cross-team listing for the Training Grounds opponent picker. Only versions with both training_grounds_eligible=true and a registered mcp_endpoint_url are returned — an endpoint-less version isn\'t dialable and so isn\'t a legal opponent regardless of its eligibility flag. training_grounds_eligible=true is currently the only accepted value for the query parameter. 
+     * Discover training-grounds-eligible opponents
+     */
+    async listTrainingGroundsVersionsRaw(requestParameters: ListTrainingGroundsVersionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<TrainingGroundsVersionList>> {
+        const requestOptions = await this.listTrainingGroundsVersionsRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => TrainingGroundsVersionListFromJSON(jsonValue));
+    }
+
+    /**
+     * Public, cross-team listing for the Training Grounds opponent picker. Only versions with both training_grounds_eligible=true and a registered mcp_endpoint_url are returned — an endpoint-less version isn\'t dialable and so isn\'t a legal opponent regardless of its eligibility flag. training_grounds_eligible=true is currently the only accepted value for the query parameter. 
+     * Discover training-grounds-eligible opponents
+     */
+    async listTrainingGroundsVersions(requestParameters: ListTrainingGroundsVersionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<TrainingGroundsVersionList> {
+        const response = await this.listTrainingGroundsVersionsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -300,4 +545,12 @@ export class AgentVersionsApi extends runtime.BaseAPI {
         return await response.value();
     }
 
+}
+
+/**
+  * @export
+  * @enum {string}
+  */
+export enum ListTrainingGroundsVersionsTrainingGroundsEligibleEnum {
+    True = 'true'
 }

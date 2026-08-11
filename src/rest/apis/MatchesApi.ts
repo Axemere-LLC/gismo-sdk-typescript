@@ -14,10 +14,20 @@
 
 import * as runtime from '../runtime.js';
 import {
+    type LaunchMatchRequest,
+    LaunchMatchRequestFromJSON,
+    LaunchMatchRequestToJSON,
+} from '../models/LaunchMatchRequest.js';
+import {
     type Match,
     MatchFromJSON,
     MatchToJSON,
 } from '../models/Match.js';
+import {
+    type MatchLaunched,
+    MatchLaunchedFromJSON,
+    MatchLaunchedToJSON,
+} from '../models/MatchLaunched.js';
 import {
     type MatchList,
     MatchListFromJSON,
@@ -26,6 +36,11 @@ import {
 
 export interface GetMatchRequest {
     id: string;
+}
+
+export interface LaunchMatchOperationRequest {
+    launchMatchRequest: LaunchMatchRequest;
+    idempotencyKey?: string;
 }
 
 export interface ListMatchesRequest {
@@ -83,6 +98,67 @@ export class MatchesApi extends runtime.BaseAPI {
      */
     async getMatch(requestParameters: GetMatchRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Match> {
         const response = await this.getMatchRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for launchMatch without sending the request
+     */
+    async launchMatchRequestOpts(requestParameters: LaunchMatchOperationRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['launchMatchRequest'] == null) {
+            throw new runtime.RequiredError(
+                'launchMatchRequest',
+                'Required parameter "launchMatchRequest" was null or undefined when calling launchMatch().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (requestParameters['idempotencyKey'] != null) {
+            headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
+        }
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/matches`;
+
+        return {
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: LaunchMatchRequestToJSON(requestParameters['launchMatchRequest']),
+        };
+    }
+
+    /**
+     * Starts a match in-process immediately — there is no \"pending\" state, so a successful response always reports status=running. The acting team is the challenger agent-version\'s own owning team: a Member may only launch with a version they personally registered, matching the registrant enforcement already applied to agent-version writes. The opponent must be training_grounds_eligible and, like the challenger, must have a registered mcp_endpoint_url. match_type is always forced to \"training\"; scenario_id is not yet supported and must be omitted. 
+     * Launch a Training Grounds match
+     */
+    async launchMatchRaw(requestParameters: LaunchMatchOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MatchLaunched>> {
+        const requestOptions = await this.launchMatchRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => MatchLaunchedFromJSON(jsonValue));
+    }
+
+    /**
+     * Starts a match in-process immediately — there is no \"pending\" state, so a successful response always reports status=running. The acting team is the challenger agent-version\'s own owning team: a Member may only launch with a version they personally registered, matching the registrant enforcement already applied to agent-version writes. The opponent must be training_grounds_eligible and, like the challenger, must have a registered mcp_endpoint_url. match_type is always forced to \"training\"; scenario_id is not yet supported and must be omitted. 
+     * Launch a Training Grounds match
+     */
+    async launchMatch(requestParameters: LaunchMatchOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MatchLaunched> {
+        const response = await this.launchMatchRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

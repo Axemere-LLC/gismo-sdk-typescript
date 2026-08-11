@@ -13,6 +13,21 @@
  */
 
 import { mapValues } from '../runtime.js';
+import type { AgentVersionReachability } from './AgentVersionReachability.js';
+import {
+    AgentVersionReachabilityFromJSON,
+    AgentVersionReachabilityFromJSONTyped,
+    AgentVersionReachabilityToJSON,
+    AgentVersionReachabilityToJSONTyped,
+} from './AgentVersionReachability.js';
+import type { AgentVersionStats } from './AgentVersionStats.js';
+import {
+    AgentVersionStatsFromJSON,
+    AgentVersionStatsFromJSONTyped,
+    AgentVersionStatsToJSON,
+    AgentVersionStatsToJSONTyped,
+} from './AgentVersionStats.js';
+
 /**
  * 
  * @export
@@ -32,11 +47,26 @@ export interface AgentVersionCreated {
      */
     agentId: string;
     /**
+     * Server-derived as "v" + generation. Cannot be set by the client.
      * 
      * @type {string}
      * @memberof AgentVersionCreated
      */
     versionLabel: string;
+    /**
+     * This version's sequence number for its agent, assigned as MAX(generation)+1 at creation — never reused, even if an earlier version is deleted, since match history and ratings still reference it. Nullable only for rows created before this field existed.
+     * 
+     * @type {number}
+     * @memberof AgentVersionCreated
+     */
+    generation?: number | null;
+    /**
+     * Free-text notes, editable after creation unlike the rest of the version. Console-only: visible to anyone who can see this team, never rendered on the public leaderboard or in match payloads. Do not store secrets here.
+     * 
+     * @type {string}
+     * @memberof AgentVersionCreated
+     */
+    description?: string;
     /**
      * 
      * @type {boolean}
@@ -50,11 +80,32 @@ export interface AgentVersionCreated {
      */
     trainingGroundsEligible: boolean;
     /**
+     * HTTPS URL of this version's MCP server. Required before the version is launch-eligible; absent means it cannot yet be dialed for a match.
+     * 
+     * @type {string}
+     * @memberof AgentVersionCreated
+     */
+    mcpEndpointUrl?: string | null;
+    /**
      * 
      * @type {Date}
      * @memberof AgentVersionCreated
      */
     createdAt: Date;
+    /**
+     * Matchmaking's probe state for this version. Present on team-scoped responses (get/list agent versions, list team agent versions); always absent on the public training-grounds listing (see TrainingGroundsVersion).
+     * 
+     * @type {AgentVersionReachability}
+     * @memberof AgentVersionCreated
+     */
+    reachability?: AgentVersionReachability | null;
+    /**
+     * Training and competition match record, split by type. Present only on the per-agent version listing (listAgentVersions); absent elsewhere, including the public training-grounds listing.
+     * 
+     * @type {AgentVersionStats}
+     * @memberof AgentVersionCreated
+     */
+    stats?: AgentVersionStats | null;
     /**
      * Raw per-agent-version MCP auth key. Shown once; never retrievable again.
      * 
@@ -69,12 +120,12 @@ export interface AgentVersionCreated {
  */
 export function instanceOfAgentVersionCreated(value: object): value is AgentVersionCreated {
     if (!('id' in value) || value['id'] === undefined) return false;
-    if ((!('agentId' in value) && !('agent_id' in value)) || (value['agentId'] === undefined && value['agent_id'] === undefined)) return false;
-    if ((!('versionLabel' in value) && !('version_label' in value)) || (value['versionLabel'] === undefined && value['version_label'] === undefined)) return false;
-    if ((!('competitionEligible' in value) && !('competition_eligible' in value)) || (value['competitionEligible'] === undefined && value['competition_eligible'] === undefined)) return false;
-    if ((!('trainingGroundsEligible' in value) && !('training_grounds_eligible' in value)) || (value['trainingGroundsEligible'] === undefined && value['training_grounds_eligible'] === undefined)) return false;
-    if ((!('createdAt' in value) && !('created_at' in value)) || (value['createdAt'] === undefined && value['created_at'] === undefined)) return false;
-    if ((!('apiKey' in value) && !('api_key' in value)) || (value['apiKey'] === undefined && value['api_key'] === undefined)) return false;
+    if ((!('agentId' in (value as Record<string, any>)) && !('agent_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['agentId'] === undefined && (value as Record<string, any>)['agent_id'] === undefined)) return false;
+    if ((!('versionLabel' in (value as Record<string, any>)) && !('version_label' in (value as Record<string, any>))) || ((value as Record<string, any>)['versionLabel'] === undefined && (value as Record<string, any>)['version_label'] === undefined)) return false;
+    if ((!('competitionEligible' in (value as Record<string, any>)) && !('competition_eligible' in (value as Record<string, any>))) || ((value as Record<string, any>)['competitionEligible'] === undefined && (value as Record<string, any>)['competition_eligible'] === undefined)) return false;
+    if ((!('trainingGroundsEligible' in (value as Record<string, any>)) && !('training_grounds_eligible' in (value as Record<string, any>))) || ((value as Record<string, any>)['trainingGroundsEligible'] === undefined && (value as Record<string, any>)['training_grounds_eligible'] === undefined)) return false;
+    if ((!('createdAt' in (value as Record<string, any>)) && !('created_at' in (value as Record<string, any>))) || ((value as Record<string, any>)['createdAt'] === undefined && (value as Record<string, any>)['created_at'] === undefined)) return false;
+    if ((!('apiKey' in (value as Record<string, any>)) && !('api_key' in (value as Record<string, any>))) || ((value as Record<string, any>)['apiKey'] === undefined && (value as Record<string, any>)['api_key'] === undefined)) return false;
     return true;
 }
 
@@ -91,9 +142,14 @@ export function AgentVersionCreatedFromJSONTyped(json: any, ignoreDiscriminator:
         'id': json['id'],
         'agentId': json['agent_id'],
         'versionLabel': json['version_label'],
+        'generation': json['generation'] === undefined ? undefined : json['generation'] === null ? null : json['generation'],
+        'description': json['description'] == null ? undefined : json['description'],
         'competitionEligible': json['competition_eligible'],
         'trainingGroundsEligible': json['training_grounds_eligible'],
+        'mcpEndpointUrl': json['mcp_endpoint_url'] === undefined ? undefined : json['mcp_endpoint_url'] === null ? null : json['mcp_endpoint_url'],
         'createdAt': (new Date(json['created_at'])),
+        'reachability': json['reachability'] === undefined ? undefined : json['reachability'] === null ? null : AgentVersionReachabilityFromJSON(json['reachability']),
+        'stats': json['stats'] === undefined ? undefined : json['stats'] === null ? null : AgentVersionStatsFromJSON(json['stats']),
         'apiKey': json['api_key'],
     };
 }
@@ -112,9 +168,14 @@ export function AgentVersionCreatedToJSONTyped(value?: AgentVersionCreated | nul
         'id': value['id'],
         'agent_id': value['agentId'],
         'version_label': value['versionLabel'],
+        'generation': value['generation'],
+        'description': value['description'],
         'competition_eligible': value['competitionEligible'],
         'training_grounds_eligible': value['trainingGroundsEligible'],
+        'mcp_endpoint_url': value['mcpEndpointUrl'],
         'created_at': value['createdAt'].toISOString(),
+        'reachability': AgentVersionReachabilityToJSON(value['reachability']),
+        'stats': AgentVersionStatsToJSON(value['stats']),
         'api_key': value['apiKey'],
     };
 }

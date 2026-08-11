@@ -63,9 +63,9 @@ export interface PersonalApiTokenCreated {
  */
 export function instanceOfPersonalApiTokenCreated(value: object): value is PersonalApiTokenCreated {
     if (!('id' in value) || value['id'] === undefined) return false;
-    if ((!('userId' in value) && !('user_id' in value)) || (value['userId'] === undefined && value['user_id'] === undefined)) return false;
-    if ((!('teamId' in value) && !('team_id' in value)) || (value['teamId'] === undefined && value['team_id'] === undefined)) return false;
-    if ((!('createdAt' in value) && !('created_at' in value)) || (value['createdAt'] === undefined && value['created_at'] === undefined)) return false;
+    if ((!('userId' in (value as Record<string, any>)) && !('user_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['userId'] === undefined && (value as Record<string, any>)['user_id'] === undefined)) return false;
+    if ((!('teamId' in (value as Record<string, any>)) && !('team_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['teamId'] === undefined && (value as Record<string, any>)['team_id'] === undefined)) return false;
+    if ((!('createdAt' in (value as Record<string, any>)) && !('created_at' in (value as Record<string, any>))) || ((value as Record<string, any>)['createdAt'] === undefined && (value as Record<string, any>)['created_at'] === undefined)) return false;
     if (!('token' in value) || value['token'] === undefined) return false;
     return true;
 }
@@ -84,7 +84,7 @@ export function PersonalApiTokenCreatedFromJSONTyped(json: any, ignoreDiscrimina
         'userId': json['user_id'],
         'teamId': json['team_id'],
         'createdAt': (new Date(json['created_at'])),
-        'revokedAt': json['revoked_at'] == null ? undefined : (new Date(json['revoked_at'])),
+        'revokedAt': json['revoked_at'] === undefined ? undefined : json['revoked_at'] === null ? null : (new Date(json['revoked_at'])),
         'token': json['token'],
     };
 }

@@ -31,101 +31,108 @@ import {
 /**
  * 
  * @export
- * @interface AgentVersion
+ * @interface TeamAgentVersion
  */
-export interface AgentVersion {
+export interface TeamAgentVersion {
     /**
      * 
      * @type {string}
-     * @memberof AgentVersion
+     * @memberof TeamAgentVersion
      */
     id: string;
     /**
      * 
      * @type {string}
-     * @memberof AgentVersion
+     * @memberof TeamAgentVersion
      */
     agentId: string;
     /**
      * Server-derived as "v" + generation. Cannot be set by the client.
      * 
      * @type {string}
-     * @memberof AgentVersion
+     * @memberof TeamAgentVersion
      */
     versionLabel: string;
     /**
      * This version's sequence number for its agent, assigned as MAX(generation)+1 at creation — never reused, even if an earlier version is deleted, since match history and ratings still reference it. Nullable only for rows created before this field existed.
      * 
      * @type {number}
-     * @memberof AgentVersion
+     * @memberof TeamAgentVersion
      */
     generation?: number | null;
     /**
      * Free-text notes, editable after creation unlike the rest of the version. Console-only: visible to anyone who can see this team, never rendered on the public leaderboard or in match payloads. Do not store secrets here.
      * 
      * @type {string}
-     * @memberof AgentVersion
+     * @memberof TeamAgentVersion
      */
     description?: string;
     /**
      * 
      * @type {boolean}
-     * @memberof AgentVersion
+     * @memberof TeamAgentVersion
      */
     competitionEligible: boolean;
     /**
      * 
      * @type {boolean}
-     * @memberof AgentVersion
+     * @memberof TeamAgentVersion
      */
     trainingGroundsEligible: boolean;
     /**
      * HTTPS URL of this version's MCP server. Required before the version is launch-eligible; absent means it cannot yet be dialed for a match.
      * 
      * @type {string}
-     * @memberof AgentVersion
+     * @memberof TeamAgentVersion
      */
     mcpEndpointUrl?: string | null;
     /**
      * 
      * @type {Date}
-     * @memberof AgentVersion
+     * @memberof TeamAgentVersion
      */
     createdAt: Date;
     /**
      * Matchmaking's probe state for this version. Present on team-scoped responses (get/list agent versions, list team agent versions); always absent on the public training-grounds listing (see TrainingGroundsVersion).
      * 
      * @type {AgentVersionReachability}
-     * @memberof AgentVersion
+     * @memberof TeamAgentVersion
      */
     reachability?: AgentVersionReachability | null;
     /**
      * Training and competition match record, split by type. Present only on the per-agent version listing (listAgentVersions); absent elsewhere, including the public training-grounds listing.
      * 
      * @type {AgentVersionStats}
-     * @memberof AgentVersion
+     * @memberof TeamAgentVersion
      */
     stats?: AgentVersionStats | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof TeamAgentVersion
+     */
+    agentName: string;
 }
 
 /**
- * Check if a given object implements the AgentVersion interface.
+ * Check if a given object implements the TeamAgentVersion interface.
  */
-export function instanceOfAgentVersion(value: object): value is AgentVersion {
+export function instanceOfTeamAgentVersion(value: object): value is TeamAgentVersion {
     if (!('id' in value) || value['id'] === undefined) return false;
     if ((!('agentId' in (value as Record<string, any>)) && !('agent_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['agentId'] === undefined && (value as Record<string, any>)['agent_id'] === undefined)) return false;
     if ((!('versionLabel' in (value as Record<string, any>)) && !('version_label' in (value as Record<string, any>))) || ((value as Record<string, any>)['versionLabel'] === undefined && (value as Record<string, any>)['version_label'] === undefined)) return false;
     if ((!('competitionEligible' in (value as Record<string, any>)) && !('competition_eligible' in (value as Record<string, any>))) || ((value as Record<string, any>)['competitionEligible'] === undefined && (value as Record<string, any>)['competition_eligible'] === undefined)) return false;
     if ((!('trainingGroundsEligible' in (value as Record<string, any>)) && !('training_grounds_eligible' in (value as Record<string, any>))) || ((value as Record<string, any>)['trainingGroundsEligible'] === undefined && (value as Record<string, any>)['training_grounds_eligible'] === undefined)) return false;
     if ((!('createdAt' in (value as Record<string, any>)) && !('created_at' in (value as Record<string, any>))) || ((value as Record<string, any>)['createdAt'] === undefined && (value as Record<string, any>)['created_at'] === undefined)) return false;
+    if ((!('agentName' in (value as Record<string, any>)) && !('agent_name' in (value as Record<string, any>))) || ((value as Record<string, any>)['agentName'] === undefined && (value as Record<string, any>)['agent_name'] === undefined)) return false;
     return true;
 }
 
-export function AgentVersionFromJSON(json: any): AgentVersion {
-    return AgentVersionFromJSONTyped(json, false);
+export function TeamAgentVersionFromJSON(json: any): TeamAgentVersion {
+    return TeamAgentVersionFromJSONTyped(json, false);
 }
 
-export function AgentVersionFromJSONTyped(json: any, ignoreDiscriminator: boolean): AgentVersion {
+export function TeamAgentVersionFromJSONTyped(json: any, ignoreDiscriminator: boolean): TeamAgentVersion {
     if (json == null) {
         return json;
     }
@@ -142,14 +149,15 @@ export function AgentVersionFromJSONTyped(json: any, ignoreDiscriminator: boolea
         'createdAt': (new Date(json['created_at'])),
         'reachability': json['reachability'] === undefined ? undefined : json['reachability'] === null ? null : AgentVersionReachabilityFromJSON(json['reachability']),
         'stats': json['stats'] === undefined ? undefined : json['stats'] === null ? null : AgentVersionStatsFromJSON(json['stats']),
+        'agentName': json['agent_name'],
     };
 }
 
-export function AgentVersionToJSON(json: any): AgentVersion {
-    return AgentVersionToJSONTyped(json, false);
+export function TeamAgentVersionToJSON(json: any): TeamAgentVersion {
+    return TeamAgentVersionToJSONTyped(json, false);
 }
 
-export function AgentVersionToJSONTyped(value?: AgentVersion | null, ignoreDiscriminator: boolean = false): any {
+export function TeamAgentVersionToJSONTyped(value?: TeamAgentVersion | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -167,6 +175,7 @@ export function AgentVersionToJSONTyped(value?: AgentVersion | null, ignoreDiscr
         'created_at': value['createdAt'].toISOString(),
         'reachability': AgentVersionReachabilityToJSON(value['reachability']),
         'stats': AgentVersionStatsToJSON(value['stats']),
+        'agent_name': value['agentName'],
     };
 }
 

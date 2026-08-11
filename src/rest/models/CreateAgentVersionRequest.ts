@@ -20,18 +20,46 @@ import { mapValues } from '../runtime.js';
  */
 export interface CreateAgentVersionRequest {
     /**
+     * Server-assigned; do not set. A non-empty value is rejected with 400 rather than silently ignored.
      * 
      * @type {string}
      * @memberof CreateAgentVersionRequest
      */
-    versionLabel: string;
+    versionLabel?: string;
+    /**
+     * Optional free-text notes. See AgentVersion.description.
+     * @type {string}
+     * @memberof CreateAgentVersionRequest
+     */
+    description?: string;
+    /**
+     * HTTPS URL of this version's MCP server. Must not embed userinfo, and must not resolve to a loopback, private, link-local, or other non-public host.
+     * 
+     * @type {string}
+     * @memberof CreateAgentVersionRequest
+     */
+    mcpEndpointUrl: string;
+    /**
+     * Secret the platform presents as a bearer token when it dials this version's MCP server to run a match. Write-only: never returned by any endpoint. Mutually exclusive with reuse_previous_outbound_key; exactly one of the two is required.
+     * 
+     * @type {string}
+     * @memberof CreateAgentVersionRequest
+     */
+    mcpOutboundKey?: string;
+    /**
+     * Copy the outbound key from this agent's highest-generation existing version instead of supplying a new one. The secret value is never returned in any response. Mutually exclusive with mcp_outbound_key.
+     * 
+     * @type {boolean}
+     * @memberof CreateAgentVersionRequest
+     */
+    reusePreviousOutboundKey?: boolean;
 }
 
 /**
  * Check if a given object implements the CreateAgentVersionRequest interface.
  */
 export function instanceOfCreateAgentVersionRequest(value: object): value is CreateAgentVersionRequest {
-    if ((!('versionLabel' in value) && !('version_label' in value)) || (value['versionLabel'] === undefined && value['version_label'] === undefined)) return false;
+    if ((!('mcpEndpointUrl' in (value as Record<string, any>)) && !('mcp_endpoint_url' in (value as Record<string, any>))) || ((value as Record<string, any>)['mcpEndpointUrl'] === undefined && (value as Record<string, any>)['mcp_endpoint_url'] === undefined)) return false;
     return true;
 }
 
@@ -45,7 +73,11 @@ export function CreateAgentVersionRequestFromJSONTyped(json: any, ignoreDiscrimi
     }
     return {
         
-        'versionLabel': json['version_label'],
+        'versionLabel': json['version_label'] == null ? undefined : json['version_label'],
+        'description': json['description'] == null ? undefined : json['description'],
+        'mcpEndpointUrl': json['mcp_endpoint_url'],
+        'mcpOutboundKey': json['mcp_outbound_key'] == null ? undefined : json['mcp_outbound_key'],
+        'reusePreviousOutboundKey': json['reuse_previous_outbound_key'] == null ? undefined : json['reuse_previous_outbound_key'],
     };
 }
 
@@ -61,6 +93,10 @@ export function CreateAgentVersionRequestToJSONTyped(value?: CreateAgentVersionR
     return {
         
         'version_label': value['versionLabel'],
+        'description': value['description'],
+        'mcp_endpoint_url': value['mcpEndpointUrl'],
+        'mcp_outbound_key': value['mcpOutboundKey'],
+        'reuse_previous_outbound_key': value['reusePreviousOutboundKey'],
     };
 }
 

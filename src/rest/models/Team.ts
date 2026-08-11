@@ -56,9 +56,9 @@ export interface Team {
  */
 export function instanceOfTeam(value: object): value is Team {
     if (!('id' in value) || value['id'] === undefined) return false;
-    if ((!('orgId' in value) && !('org_id' in value)) || (value['orgId'] === undefined && value['org_id'] === undefined)) return false;
+    if ((!('orgId' in (value as Record<string, any>)) && !('org_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['orgId'] === undefined && (value as Record<string, any>)['org_id'] === undefined)) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
-    if ((!('createdAt' in value) && !('created_at' in value)) || (value['createdAt'] === undefined && value['created_at'] === undefined)) return false;
+    if ((!('createdAt' in (value as Record<string, any>)) && !('created_at' in (value as Record<string, any>))) || ((value as Record<string, any>)['createdAt'] === undefined && (value as Record<string, any>)['created_at'] === undefined)) return false;
     return true;
 }
 
@@ -75,7 +75,7 @@ export function TeamFromJSONTyped(json: any, ignoreDiscriminator: boolean): Team
         'id': json['id'],
         'orgId': json['org_id'],
         'name': json['name'],
-        'logoUrl': json['logo_url'] == null ? undefined : json['logo_url'],
+        'logoUrl': json['logo_url'] === undefined ? undefined : json['logo_url'] === null ? null : json['logo_url'],
         'createdAt': (new Date(json['created_at'])),
     };
 }

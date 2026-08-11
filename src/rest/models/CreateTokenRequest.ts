@@ -31,7 +31,7 @@ export interface CreateTokenRequest {
  * Check if a given object implements the CreateTokenRequest interface.
  */
 export function instanceOfCreateTokenRequest(value: object): value is CreateTokenRequest {
-    if ((!('teamId' in value) && !('team_id' in value)) || (value['teamId'] === undefined && value['team_id'] === undefined)) return false;
+    if ((!('teamId' in (value as Record<string, any>)) && !('team_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['teamId'] === undefined && (value as Record<string, any>)['team_id'] === undefined)) return false;
     return true;
 }
 

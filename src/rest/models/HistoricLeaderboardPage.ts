@@ -46,7 +46,7 @@ export interface HistoricLeaderboardPage {
  */
 export function instanceOfHistoricLeaderboardPage(value: object): value is HistoricLeaderboardPage {
     if (!('items' in value) || value['items'] === undefined) return false;
-    if ((!('nextPageToken' in value) && !('next_page_token' in value)) || (value['nextPageToken'] === undefined && value['next_page_token'] === undefined)) return false;
+    if ((!('nextPageToken' in (value as Record<string, any>)) && !('next_page_token' in (value as Record<string, any>))) || ((value as Record<string, any>)['nextPageToken'] === undefined && (value as Record<string, any>)['next_page_token'] === undefined)) return false;
     return true;
 }
 

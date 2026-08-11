@@ -3,7 +3,7 @@ set -euo pipefail
 
 SDK_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CONTRACTS_DIR="${GISMO_CONTRACTS_DIR:-$SDK_DIR/../gismo-contracts}"
-OPENAPI_GENERATOR_VERSION="7.23.0"
+OPENAPI_GENERATOR_VERSION="7.24.0"
 JSON_SCHEMA_TO_TS_VERSION="15.0.4"
 
 if [[ ! -f "$CONTRACTS_DIR/openapi/openapi.yaml" ]]; then

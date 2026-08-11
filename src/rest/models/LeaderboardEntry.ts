@@ -32,6 +32,30 @@ export interface LeaderboardEntry {
      */
     agentVersionId: string;
     /**
+     * 
+     * @type {string}
+     * @memberof LeaderboardEntry
+     */
+    agentName: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof LeaderboardEntry
+     */
+    agentVersionLabel: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof LeaderboardEntry
+     */
+    teamName: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof LeaderboardEntry
+     */
+    orgName: string;
+    /**
      * Glicko-2 rating (r). Default for a new agent-version is 1500.
      * @type {number}
      * @memberof LeaderboardEntry
@@ -56,9 +80,13 @@ export interface LeaderboardEntry {
  */
 export function instanceOfLeaderboardEntry(value: object): value is LeaderboardEntry {
     if (!('rank' in value) || value['rank'] === undefined) return false;
-    if ((!('agentVersionId' in value) && !('agent_version_id' in value)) || (value['agentVersionId'] === undefined && value['agent_version_id'] === undefined)) return false;
+    if ((!('agentVersionId' in (value as Record<string, any>)) && !('agent_version_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['agentVersionId'] === undefined && (value as Record<string, any>)['agent_version_id'] === undefined)) return false;
+    if ((!('agentName' in (value as Record<string, any>)) && !('agent_name' in (value as Record<string, any>))) || ((value as Record<string, any>)['agentName'] === undefined && (value as Record<string, any>)['agent_name'] === undefined)) return false;
+    if ((!('agentVersionLabel' in (value as Record<string, any>)) && !('agent_version_label' in (value as Record<string, any>))) || ((value as Record<string, any>)['agentVersionLabel'] === undefined && (value as Record<string, any>)['agent_version_label'] === undefined)) return false;
+    if ((!('teamName' in (value as Record<string, any>)) && !('team_name' in (value as Record<string, any>))) || ((value as Record<string, any>)['teamName'] === undefined && (value as Record<string, any>)['team_name'] === undefined)) return false;
+    if ((!('orgName' in (value as Record<string, any>)) && !('org_name' in (value as Record<string, any>))) || ((value as Record<string, any>)['orgName'] === undefined && (value as Record<string, any>)['org_name'] === undefined)) return false;
     if (!('rating' in value) || value['rating'] === undefined) return false;
-    if ((!('ratingDeviation' in value) && !('rating_deviation' in value)) || (value['ratingDeviation'] === undefined && value['rating_deviation'] === undefined)) return false;
+    if ((!('ratingDeviation' in (value as Record<string, any>)) && !('rating_deviation' in (value as Record<string, any>))) || ((value as Record<string, any>)['ratingDeviation'] === undefined && (value as Record<string, any>)['rating_deviation'] === undefined)) return false;
     if (!('provisional' in value) || value['provisional'] === undefined) return false;
     return true;
 }
@@ -75,6 +103,10 @@ export function LeaderboardEntryFromJSONTyped(json: any, ignoreDiscriminator: bo
         
         'rank': json['rank'],
         'agentVersionId': json['agent_version_id'],
+        'agentName': json['agent_name'],
+        'agentVersionLabel': json['agent_version_label'],
+        'teamName': json['team_name'],
+        'orgName': json['org_name'],
         'rating': json['rating'],
         'ratingDeviation': json['rating_deviation'],
         'provisional': json['provisional'],
@@ -94,6 +126,10 @@ export function LeaderboardEntryToJSONTyped(value?: LeaderboardEntry | null, ign
         
         'rank': value['rank'],
         'agent_version_id': value['agentVersionId'],
+        'agent_name': value['agentName'],
+        'agent_version_label': value['agentVersionLabel'],
+        'team_name': value['teamName'],
+        'org_name': value['orgName'],
         'rating': value['rating'],
         'rating_deviation': value['ratingDeviation'],
         'provisional': value['provisional'],

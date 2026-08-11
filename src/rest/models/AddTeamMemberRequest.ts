@@ -37,7 +37,7 @@ export interface AddTeamMemberRequest {
  * Check if a given object implements the AddTeamMemberRequest interface.
  */
 export function instanceOfAddTeamMemberRequest(value: object): value is AddTeamMemberRequest {
-    if ((!('userId' in value) && !('user_id' in value)) || (value['userId'] === undefined && value['user_id'] === undefined)) return false;
+    if ((!('userId' in (value as Record<string, any>)) && !('user_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['userId'] === undefined && (value as Record<string, any>)['user_id'] === undefined)) return false;
     return true;
 }
 

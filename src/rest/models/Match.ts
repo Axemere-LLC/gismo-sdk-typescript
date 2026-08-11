@@ -38,6 +38,90 @@ export interface Match {
      */
     agentVersionB: string;
     /**
+     * agents.id for side A — the value the agent_id query filter compares against, not the agent-version id above. Enables click-to-filter UIs without a separate name-search endpoint.
+     * @type {string}
+     * @memberof Match
+     */
+    agentAId: string;
+    /**
+     * teams.id for side A; the team_id filter value.
+     * @type {string}
+     * @memberof Match
+     */
+    teamAId: string;
+    /**
+     * teams.org_id for side A (TEXT); the org_id filter value.
+     * @type {string}
+     * @memberof Match
+     */
+    orgAId: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Match
+     */
+    agentAName: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Match
+     */
+    agentAVersionLabel?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Match
+     */
+    teamAName: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Match
+     */
+    orgAName: string;
+    /**
+     * agents.id for side B.
+     * @type {string}
+     * @memberof Match
+     */
+    agentBId: string;
+    /**
+     * teams.id for side B.
+     * @type {string}
+     * @memberof Match
+     */
+    teamBId: string;
+    /**
+     * teams.org_id for side B (TEXT).
+     * @type {string}
+     * @memberof Match
+     */
+    orgBId: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Match
+     */
+    agentBName: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Match
+     */
+    agentBVersionLabel?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Match
+     */
+    teamBName: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Match
+     */
+    orgBName: string;
+    /**
      * 
      * @type {string}
      * @memberof Match
@@ -56,11 +140,59 @@ export interface Match {
      */
     winnerAgentVersionId?: string | null;
     /**
+     * Display name of the winning side's agent, or null for a tie/in-progress match.
+     * @type {string}
+     * @memberof Match
+     */
+    winnerName?: string | null;
+    /**
      * 
      * @type {Date}
      * @memberof Match
      */
     createdAt: Date;
+    /**
+     * 
+     * @type {Date}
+     * @memberof Match
+     */
+    startedAt?: Date | null;
+    /**
+     * 
+     * @type {Date}
+     * @memberof Match
+     */
+    endedAt?: Date | null;
+    /**
+     * Number of impulses played, once the match has ended.
+     * @type {number}
+     * @memberof Match
+     */
+    impulses?: number | null;
+    /**
+     * Whether the full command log may be downloaded, vs. replay-only.
+     * @type {boolean}
+     * @memberof Match
+     */
+    logDownloadable: boolean;
+    /**
+     * Side A's current leaderboard rank, if rated.
+     * @type {number}
+     * @memberof Match
+     */
+    agentARank?: number | null;
+    /**
+     * Side B's current leaderboard rank, if rated.
+     * @type {number}
+     * @memberof Match
+     */
+    agentBRank?: number | null;
+    /**
+     * Win-condition code from the referee (e.g. blockhouse_destroyed, tanks_eliminated, surrender, forfeit, turn_limit), null until the match completes.
+     * @type {string}
+     * @memberof Match
+     */
+    outcomeReason?: string | null;
 }
 
 /**
@@ -68,11 +200,24 @@ export interface Match {
  */
 export function instanceOfMatch(value: object): value is Match {
     if (!('id' in value) || value['id'] === undefined) return false;
-    if ((!('agentVersionA' in value) && !('agent_version_a' in value)) || (value['agentVersionA'] === undefined && value['agent_version_a'] === undefined)) return false;
-    if ((!('agentVersionB' in value) && !('agent_version_b' in value)) || (value['agentVersionB'] === undefined && value['agent_version_b'] === undefined)) return false;
-    if ((!('matchType' in value) && !('match_type' in value)) || (value['matchType'] === undefined && value['match_type'] === undefined)) return false;
+    if ((!('agentVersionA' in (value as Record<string, any>)) && !('agent_version_a' in (value as Record<string, any>))) || ((value as Record<string, any>)['agentVersionA'] === undefined && (value as Record<string, any>)['agent_version_a'] === undefined)) return false;
+    if ((!('agentVersionB' in (value as Record<string, any>)) && !('agent_version_b' in (value as Record<string, any>))) || ((value as Record<string, any>)['agentVersionB'] === undefined && (value as Record<string, any>)['agent_version_b'] === undefined)) return false;
+    if ((!('agentAId' in (value as Record<string, any>)) && !('agent_a_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['agentAId'] === undefined && (value as Record<string, any>)['agent_a_id'] === undefined)) return false;
+    if ((!('teamAId' in (value as Record<string, any>)) && !('team_a_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['teamAId'] === undefined && (value as Record<string, any>)['team_a_id'] === undefined)) return false;
+    if ((!('orgAId' in (value as Record<string, any>)) && !('org_a_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['orgAId'] === undefined && (value as Record<string, any>)['org_a_id'] === undefined)) return false;
+    if ((!('agentAName' in (value as Record<string, any>)) && !('agent_a_name' in (value as Record<string, any>))) || ((value as Record<string, any>)['agentAName'] === undefined && (value as Record<string, any>)['agent_a_name'] === undefined)) return false;
+    if ((!('teamAName' in (value as Record<string, any>)) && !('team_a_name' in (value as Record<string, any>))) || ((value as Record<string, any>)['teamAName'] === undefined && (value as Record<string, any>)['team_a_name'] === undefined)) return false;
+    if ((!('orgAName' in (value as Record<string, any>)) && !('org_a_name' in (value as Record<string, any>))) || ((value as Record<string, any>)['orgAName'] === undefined && (value as Record<string, any>)['org_a_name'] === undefined)) return false;
+    if ((!('agentBId' in (value as Record<string, any>)) && !('agent_b_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['agentBId'] === undefined && (value as Record<string, any>)['agent_b_id'] === undefined)) return false;
+    if ((!('teamBId' in (value as Record<string, any>)) && !('team_b_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['teamBId'] === undefined && (value as Record<string, any>)['team_b_id'] === undefined)) return false;
+    if ((!('orgBId' in (value as Record<string, any>)) && !('org_b_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['orgBId'] === undefined && (value as Record<string, any>)['org_b_id'] === undefined)) return false;
+    if ((!('agentBName' in (value as Record<string, any>)) && !('agent_b_name' in (value as Record<string, any>))) || ((value as Record<string, any>)['agentBName'] === undefined && (value as Record<string, any>)['agent_b_name'] === undefined)) return false;
+    if ((!('teamBName' in (value as Record<string, any>)) && !('team_b_name' in (value as Record<string, any>))) || ((value as Record<string, any>)['teamBName'] === undefined && (value as Record<string, any>)['team_b_name'] === undefined)) return false;
+    if ((!('orgBName' in (value as Record<string, any>)) && !('org_b_name' in (value as Record<string, any>))) || ((value as Record<string, any>)['orgBName'] === undefined && (value as Record<string, any>)['org_b_name'] === undefined)) return false;
+    if ((!('matchType' in (value as Record<string, any>)) && !('match_type' in (value as Record<string, any>))) || ((value as Record<string, any>)['matchType'] === undefined && (value as Record<string, any>)['match_type'] === undefined)) return false;
     if (!('status' in value) || value['status'] === undefined) return false;
-    if ((!('createdAt' in value) && !('created_at' in value)) || (value['createdAt'] === undefined && value['created_at'] === undefined)) return false;
+    if ((!('createdAt' in (value as Record<string, any>)) && !('created_at' in (value as Record<string, any>))) || ((value as Record<string, any>)['createdAt'] === undefined && (value as Record<string, any>)['created_at'] === undefined)) return false;
+    if ((!('logDownloadable' in (value as Record<string, any>)) && !('log_downloadable' in (value as Record<string, any>))) || ((value as Record<string, any>)['logDownloadable'] === undefined && (value as Record<string, any>)['log_downloadable'] === undefined)) return false;
     return true;
 }
 
@@ -89,10 +234,32 @@ export function MatchFromJSONTyped(json: any, ignoreDiscriminator: boolean): Mat
         'id': json['id'],
         'agentVersionA': json['agent_version_a'],
         'agentVersionB': json['agent_version_b'],
+        'agentAId': json['agent_a_id'],
+        'teamAId': json['team_a_id'],
+        'orgAId': json['org_a_id'],
+        'agentAName': json['agent_a_name'],
+        'agentAVersionLabel': json['agent_a_version_label'] == null ? undefined : json['agent_a_version_label'],
+        'teamAName': json['team_a_name'],
+        'orgAName': json['org_a_name'],
+        'agentBId': json['agent_b_id'],
+        'teamBId': json['team_b_id'],
+        'orgBId': json['org_b_id'],
+        'agentBName': json['agent_b_name'],
+        'agentBVersionLabel': json['agent_b_version_label'] == null ? undefined : json['agent_b_version_label'],
+        'teamBName': json['team_b_name'],
+        'orgBName': json['org_b_name'],
         'matchType': json['match_type'],
         'status': json['status'],
-        'winnerAgentVersionId': json['winner_agent_version_id'] == null ? undefined : json['winner_agent_version_id'],
+        'winnerAgentVersionId': json['winner_agent_version_id'] === undefined ? undefined : json['winner_agent_version_id'] === null ? null : json['winner_agent_version_id'],
+        'winnerName': json['winner_name'] === undefined ? undefined : json['winner_name'] === null ? null : json['winner_name'],
         'createdAt': (new Date(json['created_at'])),
+        'startedAt': json['started_at'] === undefined ? undefined : json['started_at'] === null ? null : (new Date(json['started_at'])),
+        'endedAt': json['ended_at'] === undefined ? undefined : json['ended_at'] === null ? null : (new Date(json['ended_at'])),
+        'impulses': json['impulses'] === undefined ? undefined : json['impulses'] === null ? null : json['impulses'],
+        'logDownloadable': json['log_downloadable'],
+        'agentARank': json['agent_a_rank'] === undefined ? undefined : json['agent_a_rank'] === null ? null : json['agent_a_rank'],
+        'agentBRank': json['agent_b_rank'] === undefined ? undefined : json['agent_b_rank'] === null ? null : json['agent_b_rank'],
+        'outcomeReason': json['outcome_reason'] === undefined ? undefined : json['outcome_reason'] === null ? null : json['outcome_reason'],
     };
 }
 
@@ -110,10 +277,32 @@ export function MatchToJSONTyped(value?: Match | null, ignoreDiscriminator: bool
         'id': value['id'],
         'agent_version_a': value['agentVersionA'],
         'agent_version_b': value['agentVersionB'],
+        'agent_a_id': value['agentAId'],
+        'team_a_id': value['teamAId'],
+        'org_a_id': value['orgAId'],
+        'agent_a_name': value['agentAName'],
+        'agent_a_version_label': value['agentAVersionLabel'],
+        'team_a_name': value['teamAName'],
+        'org_a_name': value['orgAName'],
+        'agent_b_id': value['agentBId'],
+        'team_b_id': value['teamBId'],
+        'org_b_id': value['orgBId'],
+        'agent_b_name': value['agentBName'],
+        'agent_b_version_label': value['agentBVersionLabel'],
+        'team_b_name': value['teamBName'],
+        'org_b_name': value['orgBName'],
         'match_type': value['matchType'],
         'status': value['status'],
         'winner_agent_version_id': value['winnerAgentVersionId'],
+        'winner_name': value['winnerName'],
         'created_at': value['createdAt'].toISOString(),
+        'started_at': value['startedAt'] == null ? value['startedAt'] : value['startedAt'].toISOString(),
+        'ended_at': value['endedAt'] == null ? value['endedAt'] : value['endedAt'].toISOString(),
+        'impulses': value['impulses'],
+        'log_downloadable': value['logDownloadable'],
+        'agent_a_rank': value['agentARank'],
+        'agent_b_rank': value['agentBRank'],
+        'outcome_reason': value['outcomeReason'],
     };
 }
 

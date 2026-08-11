@@ -16,69 +16,76 @@ import { mapValues } from '../runtime.js';
 /**
  * 
  * @export
- * @interface Organization
+ * @interface OrgMember
  */
-export interface Organization {
+export interface OrgMember {
     /**
      * 
      * @type {string}
-     * @memberof Organization
+     * @memberof OrgMember
      */
     id: string;
     /**
      * 
-     * @type {string}
-     * @memberof Organization
-     */
-    name: string;
-    /**
-     * 
      * @type {Date}
-     * @memberof Organization
+     * @memberof OrgMember
      */
     createdAt: Date;
     /**
-     * The caller's role weight in this organization (member=3, admin=4, owner=5) — lets a client decide whether to show admin-only views without a second request.
      * 
+     * @type {string}
+     * @memberof OrgMember
+     */
+    email: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OrgMember
+     */
+    displayName: string;
+    /**
+     * This member's role weight (member=3, admin=4, owner=5).
      * @type {number}
-     * @memberof Organization
+     * @memberof OrgMember
      */
     roleWeight: number;
 }
 
 /**
- * Check if a given object implements the Organization interface.
+ * Check if a given object implements the OrgMember interface.
  */
-export function instanceOfOrganization(value: object): value is Organization {
+export function instanceOfOrgMember(value: object): value is OrgMember {
     if (!('id' in value) || value['id'] === undefined) return false;
-    if (!('name' in value) || value['name'] === undefined) return false;
     if ((!('createdAt' in (value as Record<string, any>)) && !('created_at' in (value as Record<string, any>))) || ((value as Record<string, any>)['createdAt'] === undefined && (value as Record<string, any>)['created_at'] === undefined)) return false;
+    if (!('email' in value) || value['email'] === undefined) return false;
+    if ((!('displayName' in (value as Record<string, any>)) && !('display_name' in (value as Record<string, any>))) || ((value as Record<string, any>)['displayName'] === undefined && (value as Record<string, any>)['display_name'] === undefined)) return false;
     if ((!('roleWeight' in (value as Record<string, any>)) && !('role_weight' in (value as Record<string, any>))) || ((value as Record<string, any>)['roleWeight'] === undefined && (value as Record<string, any>)['role_weight'] === undefined)) return false;
     return true;
 }
 
-export function OrganizationFromJSON(json: any): Organization {
-    return OrganizationFromJSONTyped(json, false);
+export function OrgMemberFromJSON(json: any): OrgMember {
+    return OrgMemberFromJSONTyped(json, false);
 }
 
-export function OrganizationFromJSONTyped(json: any, ignoreDiscriminator: boolean): Organization {
+export function OrgMemberFromJSONTyped(json: any, ignoreDiscriminator: boolean): OrgMember {
     if (json == null) {
         return json;
     }
     return {
         
         'id': json['id'],
-        'name': json['name'],
         'createdAt': (new Date(json['created_at'])),
+        'email': json['email'],
+        'displayName': json['display_name'],
         'roleWeight': json['role_weight'],
     };
 }
 
-export function OrganizationToJSON(json: any): Organization {
-    return OrganizationToJSONTyped(json, false);
+export function OrgMemberToJSON(json: any): OrgMember {
+    return OrgMemberToJSONTyped(json, false);
 }
 
-export function OrganizationToJSONTyped(value?: Organization | null, ignoreDiscriminator: boolean = false): any {
+export function OrgMemberToJSONTyped(value?: OrgMember | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -86,8 +93,9 @@ export function OrganizationToJSONTyped(value?: Organization | null, ignoreDiscr
     return {
         
         'id': value['id'],
-        'name': value['name'],
         'created_at': value['createdAt'].toISOString(),
+        'email': value['email'],
+        'display_name': value['displayName'],
         'role_weight': value['roleWeight'],
     };
 }

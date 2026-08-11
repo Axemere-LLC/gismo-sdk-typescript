@@ -14,8 +14,9 @@
 
 import * as runtime from '../runtime.js';
 
-export interface DownloadCommandLogRequest {
+export interface GetMatchLogRequest {
     id: string;
+    download?: GetMatchLogDownloadEnum;
 }
 
 /**
@@ -24,17 +25,21 @@ export interface DownloadCommandLogRequest {
 export class CommandLogsApi extends runtime.BaseAPI {
 
     /**
-     * Creates request options for downloadCommandLog without sending the request
+     * Creates request options for getMatchLog without sending the request
      */
-    async downloadCommandLogRequestOpts(requestParameters: DownloadCommandLogRequest): Promise<runtime.RequestOpts> {
+    async getMatchLogRequestOpts(requestParameters: GetMatchLogRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
-                'Required parameter "id" was null or undefined when calling downloadCommandLog().'
+                'Required parameter "id" was null or undefined when calling getMatchLog().'
             );
         }
 
         const queryParameters: any = {};
+
+        if (requestParameters['download'] != null) {
+            queryParameters['download'] = requestParameters['download'];
+        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
@@ -51,23 +56,31 @@ export class CommandLogsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Streamed newline-delimited JSON per playback-and-replay.md#command-log-format-json-lines: one Match Header record, one Impulse record per line, one Outcome record. 
-     * Download a completed match\'s command log
+     * The command log recorded for this match, as a single JSON document (Match Header, the full Impulse list, and Outcome). This is an interim representation of the format defined in playback-and-replay.md#command-log-format-json-lines; that document\'s per-record JSON Lines transport (application/x-ndjson, streamed one record per line) is this endpoint\'s target shape and lands in a later release — see playback-and-replay.md#download-endpoint. 404 if the match does not exist or has no ingested log yet. A plain GET (used by the console\'s replay view) always succeeds regardless of the match\'s `log_downloadable` flag. Passing `download=1` marks the request as an explicit download rather than replay; for a match with `log_downloadable=false` that variant alone returns 403. This lets one specific match\'s log be exempted from bulk download without breaking its own replay. 
+     * Get a completed match\'s command log
      */
-    async downloadCommandLogRaw(requestParameters: DownloadCommandLogRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Blob>> {
-        const requestOptions = await this.downloadCommandLogRequestOpts(requestParameters);
+    async getMatchLogRaw(requestParameters: GetMatchLogRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
+        const requestOptions = await this.getMatchLogRequestOpts(requestParameters);
         const response = await this.request(requestOptions, initOverrides);
 
-        return new runtime.BlobApiResponse(response);
+        return new runtime.JSONApiResponse<any>(response);
     }
 
     /**
-     * Streamed newline-delimited JSON per playback-and-replay.md#command-log-format-json-lines: one Match Header record, one Impulse record per line, one Outcome record. 
-     * Download a completed match\'s command log
+     * The command log recorded for this match, as a single JSON document (Match Header, the full Impulse list, and Outcome). This is an interim representation of the format defined in playback-and-replay.md#command-log-format-json-lines; that document\'s per-record JSON Lines transport (application/x-ndjson, streamed one record per line) is this endpoint\'s target shape and lands in a later release — see playback-and-replay.md#download-endpoint. 404 if the match does not exist or has no ingested log yet. A plain GET (used by the console\'s replay view) always succeeds regardless of the match\'s `log_downloadable` flag. Passing `download=1` marks the request as an explicit download rather than replay; for a match with `log_downloadable=false` that variant alone returns 403. This lets one specific match\'s log be exempted from bulk download without breaking its own replay. 
+     * Get a completed match\'s command log
      */
-    async downloadCommandLog(requestParameters: DownloadCommandLogRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Blob> {
-        const response = await this.downloadCommandLogRaw(requestParameters, initOverrides);
+    async getMatchLog(requestParameters: GetMatchLogRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
+        const response = await this.getMatchLogRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
+}
+
+/**
+  * @export
+  * @enum {string}
+  */
+export enum GetMatchLogDownloadEnum {
+    _1 = '1'
 }

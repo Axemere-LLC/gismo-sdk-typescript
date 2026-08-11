@@ -50,9 +50,9 @@ export interface Agent {
  */
 export function instanceOfAgent(value: object): value is Agent {
     if (!('id' in value) || value['id'] === undefined) return false;
-    if ((!('teamId' in value) && !('team_id' in value)) || (value['teamId'] === undefined && value['team_id'] === undefined)) return false;
+    if ((!('teamId' in (value as Record<string, any>)) && !('team_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['teamId'] === undefined && (value as Record<string, any>)['team_id'] === undefined)) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
-    if ((!('createdAt' in value) && !('created_at' in value)) || (value['createdAt'] === undefined && value['created_at'] === undefined)) return false;
+    if ((!('createdAt' in (value as Record<string, any>)) && !('created_at' in (value as Record<string, any>))) || ((value as Record<string, any>)['createdAt'] === undefined && (value as Record<string, any>)['created_at'] === undefined)) return false;
     return true;
 }
 

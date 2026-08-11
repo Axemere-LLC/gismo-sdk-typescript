@@ -37,8 +37,8 @@ export interface AgentVersionKeyRotated {
  * Check if a given object implements the AgentVersionKeyRotated interface.
  */
 export function instanceOfAgentVersionKeyRotated(value: object): value is AgentVersionKeyRotated {
-    if ((!('agentVersionId' in value) && !('agent_version_id' in value)) || (value['agentVersionId'] === undefined && value['agent_version_id'] === undefined)) return false;
-    if ((!('apiKey' in value) && !('api_key' in value)) || (value['apiKey'] === undefined && value['api_key'] === undefined)) return false;
+    if ((!('agentVersionId' in (value as Record<string, any>)) && !('agent_version_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['agentVersionId'] === undefined && (value as Record<string, any>)['agent_version_id'] === undefined)) return false;
+    if ((!('apiKey' in (value as Record<string, any>)) && !('api_key' in (value as Record<string, any>))) || ((value as Record<string, any>)['apiKey'] === undefined && (value as Record<string, any>)['api_key'] === undefined)) return false;
     return true;
 }
 

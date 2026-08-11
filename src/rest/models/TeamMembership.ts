@@ -56,10 +56,10 @@ export interface TeamMembership {
  */
 export function instanceOfTeamMembership(value: object): value is TeamMembership {
     if (!('id' in value) || value['id'] === undefined) return false;
-    if ((!('teamId' in value) && !('team_id' in value)) || (value['teamId'] === undefined && value['team_id'] === undefined)) return false;
-    if ((!('userId' in value) && !('user_id' in value)) || (value['userId'] === undefined && value['user_id'] === undefined)) return false;
-    if ((!('isLead' in value) && !('is_lead' in value)) || (value['isLead'] === undefined && value['is_lead'] === undefined)) return false;
-    if ((!('createdAt' in value) && !('created_at' in value)) || (value['createdAt'] === undefined && value['created_at'] === undefined)) return false;
+    if ((!('teamId' in (value as Record<string, any>)) && !('team_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['teamId'] === undefined && (value as Record<string, any>)['team_id'] === undefined)) return false;
+    if ((!('userId' in (value as Record<string, any>)) && !('user_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['userId'] === undefined && (value as Record<string, any>)['user_id'] === undefined)) return false;
+    if ((!('isLead' in (value as Record<string, any>)) && !('is_lead' in (value as Record<string, any>))) || ((value as Record<string, any>)['isLead'] === undefined && (value as Record<string, any>)['is_lead'] === undefined)) return false;
+    if ((!('createdAt' in (value as Record<string, any>)) && !('created_at' in (value as Record<string, any>))) || ((value as Record<string, any>)['createdAt'] === undefined && (value as Record<string, any>)['created_at'] === undefined)) return false;
     return true;
 }
 

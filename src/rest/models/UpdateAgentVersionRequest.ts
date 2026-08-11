@@ -31,6 +31,26 @@ export interface UpdateAgentVersionRequest {
      * @memberof UpdateAgentVersionRequest
      */
     trainingGroundsEligible?: boolean;
+    /**
+     * Replaces the registered MCP endpoint if present. Same validation as on create; an empty string is rejected, so this field cannot be used to clear a previously registered endpoint.
+     * 
+     * @type {string}
+     * @memberof UpdateAgentVersionRequest
+     */
+    mcpEndpointUrl?: string;
+    /**
+     * Replaces the outbound dial credential if present. Same validation as on create; an empty string is rejected, so this field cannot be used to clear a previously registered key.
+     * 
+     * @type {string}
+     * @memberof UpdateAgentVersionRequest
+     */
+    mcpOutboundKey?: string;
+    /**
+     * See AgentVersion.description.
+     * @type {string}
+     * @memberof UpdateAgentVersionRequest
+     */
+    description?: string;
 }
 
 /**
@@ -52,6 +72,9 @@ export function UpdateAgentVersionRequestFromJSONTyped(json: any, ignoreDiscrimi
         
         'competitionEligible': json['competition_eligible'] == null ? undefined : json['competition_eligible'],
         'trainingGroundsEligible': json['training_grounds_eligible'] == null ? undefined : json['training_grounds_eligible'],
+        'mcpEndpointUrl': json['mcp_endpoint_url'] == null ? undefined : json['mcp_endpoint_url'],
+        'mcpOutboundKey': json['mcp_outbound_key'] == null ? undefined : json['mcp_outbound_key'],
+        'description': json['description'] == null ? undefined : json['description'],
     };
 }
 
@@ -68,6 +91,9 @@ export function UpdateAgentVersionRequestToJSONTyped(value?: UpdateAgentVersionR
         
         'competition_eligible': value['competitionEligible'],
         'training_grounds_eligible': value['trainingGroundsEligible'],
+        'mcp_endpoint_url': value['mcpEndpointUrl'],
+        'mcp_outbound_key': value['mcpOutboundKey'],
+        'description': value['description'],
     };
 }
 

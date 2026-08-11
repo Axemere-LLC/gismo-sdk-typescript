@@ -13,70 +13,70 @@
  */
 
 import { mapValues } from '../runtime.js';
-import type { Team } from './Team.js';
+import type { CompetitiveOrgEntry } from './CompetitiveOrgEntry.js';
 import {
-    TeamFromJSON,
-    TeamFromJSONTyped,
-    TeamToJSON,
-    TeamToJSONTyped,
-} from './Team.js';
+    CompetitiveOrgEntryFromJSON,
+    CompetitiveOrgEntryFromJSONTyped,
+    CompetitiveOrgEntryToJSON,
+    CompetitiveOrgEntryToJSONTyped,
+} from './CompetitiveOrgEntry.js';
 
 /**
  * 
  * @export
- * @interface TeamList
+ * @interface CompetitiveOrgPage
  */
-export interface TeamList {
+export interface CompetitiveOrgPage {
     /**
      * 
-     * @type {Array<Team>}
-     * @memberof TeamList
+     * @type {Array<CompetitiveOrgEntry>}
+     * @memberof CompetitiveOrgPage
      */
-    items: Array<Team>;
+    items: Array<CompetitiveOrgEntry>;
     /**
      * 
      * @type {string}
-     * @memberof TeamList
+     * @memberof CompetitiveOrgPage
      */
     nextPageToken: string;
 }
 
 /**
- * Check if a given object implements the TeamList interface.
+ * Check if a given object implements the CompetitiveOrgPage interface.
  */
-export function instanceOfTeamList(value: object): value is TeamList {
+export function instanceOfCompetitiveOrgPage(value: object): value is CompetitiveOrgPage {
     if (!('items' in value) || value['items'] === undefined) return false;
     if ((!('nextPageToken' in (value as Record<string, any>)) && !('next_page_token' in (value as Record<string, any>))) || ((value as Record<string, any>)['nextPageToken'] === undefined && (value as Record<string, any>)['next_page_token'] === undefined)) return false;
     return true;
 }
 
-export function TeamListFromJSON(json: any): TeamList {
-    return TeamListFromJSONTyped(json, false);
+export function CompetitiveOrgPageFromJSON(json: any): CompetitiveOrgPage {
+    return CompetitiveOrgPageFromJSONTyped(json, false);
 }
 
-export function TeamListFromJSONTyped(json: any, ignoreDiscriminator: boolean): TeamList {
+export function CompetitiveOrgPageFromJSONTyped(json: any, ignoreDiscriminator: boolean): CompetitiveOrgPage {
     if (json == null) {
         return json;
     }
     return {
         
-        'items': ((json['items'] as Array<any>).map(TeamFromJSON)),
+        'items': ((json['items'] as Array<any>).map(CompetitiveOrgEntryFromJSON)),
         'nextPageToken': json['next_page_token'],
     };
 }
 
-export function TeamListToJSON(json: any): TeamList {
-    return TeamListToJSONTyped(json, false);
+export function CompetitiveOrgPageToJSON(json: any): CompetitiveOrgPage {
+    return CompetitiveOrgPageToJSONTyped(json, false);
 }
 
-export function TeamListToJSONTyped(value?: TeamList | null, ignoreDiscriminator: boolean = false): any {
+export function CompetitiveOrgPageToJSONTyped(value?: CompetitiveOrgPage | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
 
     return {
         
-        'items': ((value['items'] as Array<any>).map(TeamToJSON)),
+        'items': ((value['items'] as Array<any>).map(CompetitiveOrgEntryToJSON)),
         'next_page_token': value['nextPageToken'],
     };
 }

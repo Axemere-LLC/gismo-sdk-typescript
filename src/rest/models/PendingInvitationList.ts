@@ -13,70 +13,70 @@
  */
 
 import { mapValues } from '../runtime.js';
-import type { Team } from './Team.js';
+import type { PendingInvitation } from './PendingInvitation.js';
 import {
-    TeamFromJSON,
-    TeamFromJSONTyped,
-    TeamToJSON,
-    TeamToJSONTyped,
-} from './Team.js';
+    PendingInvitationFromJSON,
+    PendingInvitationFromJSONTyped,
+    PendingInvitationToJSON,
+    PendingInvitationToJSONTyped,
+} from './PendingInvitation.js';
 
 /**
  * 
  * @export
- * @interface TeamList
+ * @interface PendingInvitationList
  */
-export interface TeamList {
+export interface PendingInvitationList {
     /**
      * 
-     * @type {Array<Team>}
-     * @memberof TeamList
+     * @type {Array<PendingInvitation>}
+     * @memberof PendingInvitationList
      */
-    items: Array<Team>;
+    items: Array<PendingInvitation>;
     /**
      * 
      * @type {string}
-     * @memberof TeamList
+     * @memberof PendingInvitationList
      */
     nextPageToken: string;
 }
 
 /**
- * Check if a given object implements the TeamList interface.
+ * Check if a given object implements the PendingInvitationList interface.
  */
-export function instanceOfTeamList(value: object): value is TeamList {
+export function instanceOfPendingInvitationList(value: object): value is PendingInvitationList {
     if (!('items' in value) || value['items'] === undefined) return false;
     if ((!('nextPageToken' in (value as Record<string, any>)) && !('next_page_token' in (value as Record<string, any>))) || ((value as Record<string, any>)['nextPageToken'] === undefined && (value as Record<string, any>)['next_page_token'] === undefined)) return false;
     return true;
 }
 
-export function TeamListFromJSON(json: any): TeamList {
-    return TeamListFromJSONTyped(json, false);
+export function PendingInvitationListFromJSON(json: any): PendingInvitationList {
+    return PendingInvitationListFromJSONTyped(json, false);
 }
 
-export function TeamListFromJSONTyped(json: any, ignoreDiscriminator: boolean): TeamList {
+export function PendingInvitationListFromJSONTyped(json: any, ignoreDiscriminator: boolean): PendingInvitationList {
     if (json == null) {
         return json;
     }
     return {
         
-        'items': ((json['items'] as Array<any>).map(TeamFromJSON)),
+        'items': ((json['items'] as Array<any>).map(PendingInvitationFromJSON)),
         'nextPageToken': json['next_page_token'],
     };
 }
 
-export function TeamListToJSON(json: any): TeamList {
-    return TeamListToJSONTyped(json, false);
+export function PendingInvitationListToJSON(json: any): PendingInvitationList {
+    return PendingInvitationListToJSONTyped(json, false);
 }
 
-export function TeamListToJSONTyped(value?: TeamList | null, ignoreDiscriminator: boolean = false): any {
+export function PendingInvitationListToJSONTyped(value?: PendingInvitationList | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
 
     return {
         
-        'items': ((value['items'] as Array<any>).map(TeamToJSON)),
+        'items': ((value['items'] as Array<any>).map(PendingInvitationToJSON)),
         'next_page_token': value['nextPageToken'],
     };
 }

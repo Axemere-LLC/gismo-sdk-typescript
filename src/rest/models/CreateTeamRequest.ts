@@ -43,7 +43,7 @@ export interface CreateTeamRequest {
  * Check if a given object implements the CreateTeamRequest interface.
  */
 export function instanceOfCreateTeamRequest(value: object): value is CreateTeamRequest {
-    if ((!('orgId' in value) && !('org_id' in value)) || (value['orgId'] === undefined && value['org_id'] === undefined)) return false;
+    if ((!('orgId' in (value as Record<string, any>)) && !('org_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['orgId'] === undefined && (value as Record<string, any>)['org_id'] === undefined)) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
     return true;
 }

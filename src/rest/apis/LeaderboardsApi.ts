@@ -14,6 +14,11 @@
 
 import * as runtime from '../runtime.js';
 import {
+    type CompetitiveOrgPage,
+    CompetitiveOrgPageFromJSON,
+    CompetitiveOrgPageToJSON,
+} from '../models/CompetitiveOrgPage.js';
+import {
     type HistoricLeaderboardPage,
     HistoricLeaderboardPageFromJSON,
     HistoricLeaderboardPageToJSON,
@@ -23,6 +28,16 @@ import {
     LeaderboardPageFromJSON,
     LeaderboardPageToJSON,
 } from '../models/LeaderboardPage.js';
+import {
+    type UnofficialLeaderboardPage,
+    UnofficialLeaderboardPageFromJSON,
+    UnofficialLeaderboardPageToJSON,
+} from '../models/UnofficialLeaderboardPage.js';
+
+export interface GetCompetitiveOrgLeaderboardRequest {
+    pageSize?: number;
+    pageToken?: string;
+}
 
 export interface GetHistoricLeaderboardRequest {
     pageSize?: number;
@@ -49,6 +64,53 @@ export interface GetUnofficialLeaderboardRequest {
  * 
  */
 export class LeaderboardsApi extends runtime.BaseAPI {
+
+    /**
+     * Creates request options for getCompetitiveOrgLeaderboard without sending the request
+     */
+    async getCompetitiveOrgLeaderboardRequestOpts(requestParameters: GetCompetitiveOrgLeaderboardRequest): Promise<runtime.RequestOpts> {
+        const queryParameters: any = {};
+
+        if (requestParameters['pageSize'] != null) {
+            queryParameters['page_size'] = requestParameters['pageSize'];
+        }
+
+        if (requestParameters['pageToken'] != null) {
+            queryParameters['page_token'] = requestParameters['pageToken'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+
+        let urlPath = `/leaderboards/competitive-organizations`;
+
+        return {
+            path: urlPath,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     * A synthetic aggregate, distinct from the /leaderboards/organizations projection: each organization\'s score is the mean rating of its top-3 non-provisional agent-versions (an agent must have shed provisional status by actually competing to count at all). Mean-of- top-3 resists both idle-agent volume-padding and cherry-picking a single standout — see leaderboard-and-rating.md#competitive-organizations. 
+     * Rank organizations by their strongest roster
+     */
+    async getCompetitiveOrgLeaderboardRaw(requestParameters: GetCompetitiveOrgLeaderboardRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CompetitiveOrgPage>> {
+        const requestOptions = await this.getCompetitiveOrgLeaderboardRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => CompetitiveOrgPageFromJSON(jsonValue));
+    }
+
+    /**
+     * A synthetic aggregate, distinct from the /leaderboards/organizations projection: each organization\'s score is the mean rating of its top-3 non-provisional agent-versions (an agent must have shed provisional status by actually competing to count at all). Mean-of- top-3 resists both idle-agent volume-padding and cherry-picking a single standout — see leaderboard-and-rating.md#competitive-organizations. 
+     * Rank organizations by their strongest roster
+     */
+    async getCompetitiveOrgLeaderboard(requestParameters: GetCompetitiveOrgLeaderboardRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CompetitiveOrgPage> {
+        const response = await this.getCompetitiveOrgLeaderboardRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      * Creates request options for getHistoricLeaderboard without sending the request
@@ -211,17 +273,21 @@ export class LeaderboardsApi extends runtime.BaseAPI {
     }
 
     /**
+     * Ranked by points_per_match — (3*wins + ties) / matches, soccer-style scoring normalized per match — descending. Agent-versions with fewer than 5 matches played are provisional_record: still shown and scored, but sorted below every qualified agent-version. See leaderboard-and-rating.md#unofficial-leaderboard. 
+     * Rank agent-versions by soccer-style points per match
      */
-    async getUnofficialLeaderboardRaw(requestParameters: GetUnofficialLeaderboardRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<LeaderboardPage>> {
+    async getUnofficialLeaderboardRaw(requestParameters: GetUnofficialLeaderboardRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UnofficialLeaderboardPage>> {
         const requestOptions = await this.getUnofficialLeaderboardRequestOpts(requestParameters);
         const response = await this.request(requestOptions, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => LeaderboardPageFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => UnofficialLeaderboardPageFromJSON(jsonValue));
     }
 
     /**
+     * Ranked by points_per_match — (3*wins + ties) / matches, soccer-style scoring normalized per match — descending. Agent-versions with fewer than 5 matches played are provisional_record: still shown and scored, but sorted below every qualified agent-version. See leaderboard-and-rating.md#unofficial-leaderboard. 
+     * Rank agent-versions by soccer-style points per match
      */
-    async getUnofficialLeaderboard(requestParameters: GetUnofficialLeaderboardRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<LeaderboardPage> {
+    async getUnofficialLeaderboard(requestParameters: GetUnofficialLeaderboardRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UnofficialLeaderboardPage> {
         const response = await this.getUnofficialLeaderboardRaw(requestParameters, initOverrides);
         return await response.value();
     }

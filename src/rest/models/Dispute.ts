@@ -68,11 +68,11 @@ export interface Dispute {
  */
 export function instanceOfDispute(value: object): value is Dispute {
     if (!('id' in value) || value['id'] === undefined) return false;
-    if ((!('matchId' in value) && !('match_id' in value)) || (value['matchId'] === undefined && value['match_id'] === undefined)) return false;
-    if ((!('filedByTeamId' in value) && !('filed_by_team_id' in value)) || (value['filedByTeamId'] === undefined && value['filed_by_team_id'] === undefined)) return false;
+    if ((!('matchId' in (value as Record<string, any>)) && !('match_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['matchId'] === undefined && (value as Record<string, any>)['match_id'] === undefined)) return false;
+    if ((!('filedByTeamId' in (value as Record<string, any>)) && !('filed_by_team_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['filedByTeamId'] === undefined && (value as Record<string, any>)['filed_by_team_id'] === undefined)) return false;
     if (!('status' in value) || value['status'] === undefined) return false;
     if (!('reason' in value) || value['reason'] === undefined) return false;
-    if ((!('createdAt' in value) && !('created_at' in value)) || (value['createdAt'] === undefined && value['created_at'] === undefined)) return false;
+    if ((!('createdAt' in (value as Record<string, any>)) && !('created_at' in (value as Record<string, any>))) || ((value as Record<string, any>)['createdAt'] === undefined && (value as Record<string, any>)['created_at'] === undefined)) return false;
     return true;
 }
 
@@ -91,7 +91,7 @@ export function DisputeFromJSONTyped(json: any, ignoreDiscriminator: boolean): D
         'filedByTeamId': json['filed_by_team_id'],
         'status': json['status'],
         'reason': json['reason'],
-        'impulse': json['impulse'] == null ? undefined : json['impulse'],
+        'impulse': json['impulse'] === undefined ? undefined : json['impulse'] === null ? null : json['impulse'],
         'createdAt': (new Date(json['created_at'])),
     };
 }
